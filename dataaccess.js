@@ -270,6 +270,7 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
           }
           else
           {
+            AddMasterEmail(connection,userID,userID);
             utility.log("Invitation inserted Successfully");
             response.setHeader("content-type", "text/plain");
             response.write('{\"Status\":\"Success\"}');
@@ -291,6 +292,7 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
         }
         else
         {
+          AddMasterEmail(connection,userID,userID);
           utility.log("User Updated Successfully");
           response.setHeader("content-type", "text/plain");
           response.write('{\"Status\":\"Success\"}');
@@ -305,7 +307,44 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
 });
 }
 
+function AddMasterEmail(connection,userID,emailID){
 
+var entity = {
+    "UserID": userID,
+    "EmailID": emailID,
+    "Verified": true
+  };
+
+  //mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+ var collection = connection.collection('EmailAddresses');
+ collection.findOne({"UserID":userID,"EmailID":emailID},function(err,addr){
+ if(err){
+  utility.log('Email Addreess FindOne error: '+err,'ERROR');
+   //connection.close();
+  return;
+ }
+ else{
+  if(addr==null){
+    collection.insert(entity, function(error, result){
+    if(error)
+    {
+      utility.log("insertEmailAddress() error: " + error,'ERROR');
+      
+      //connection.close();
+      return;
+    }
+    else
+    {
+      utility.log("Email(s) inserted Successfully");
+
+      //connection.close();
+      return;
+    }
+  });
+  }
+ }
+ //});
+}
 function SendConfirmationEmail(id,email){
 
   var link=config.SITE_ROOT_URL+"/eac?e="+email+"&_id="+id;
@@ -355,6 +394,8 @@ function VerifiedEmailAddress(response,id,email){
   });
 });
 }
+
+
 // http://localhost:8080/addemail?userID=sumon@live.com&emailID=sumon3@live.com
 //// Add method to add User's Other Emails 
 function insertEmailAddress(response,userID,emailID)

@@ -270,7 +270,7 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
           }
           else
           {
-            AddMasterEmail(connection,userID,userID);
+            AddMasterEmail(userID,userID);
             utility.log("Invitation inserted Successfully");
             response.setHeader("content-type", "text/plain");
             response.write('{\"Status\":\"Success\"}');
@@ -292,7 +292,7 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
         }
         else
         {
-          AddMasterEmail(connection,userID,userID);
+          AddMasterEmail(userID,userID);
           utility.log("User Updated Successfully");
           response.setHeader("content-type", "text/plain");
           response.write('{\"Status\":\"Success\"}');
@@ -307,7 +307,7 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
 });
 }
 
-function AddMasterEmail(connection,userID,emailID){
+function AddMasterEmail(userID,emailID){
 
 var entity = {
     "UserID": userID,
@@ -315,7 +315,7 @@ var entity = {
     "Verified": true
   };
 
-  //mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
  var collection = connection.collection('EmailAddresses');
  collection.findOne({"UserID":userID,"EmailID":emailID},function(err,addr){
  if(err){
@@ -344,7 +344,7 @@ var entity = {
   }
  }
  });
-//});
+});
 }
 function SendConfirmationEmail(id,email){
 

@@ -13,7 +13,7 @@ function getRemainderTime(response,userID)
 {
  
   var entity = {
-    "UserID": userID,
+    "UserID": userID
   };
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
    var collection = connection.collection('Registrations');

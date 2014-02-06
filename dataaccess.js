@@ -343,7 +343,8 @@ var entity = {
   });
   }
  }
- //});
+ });
+//});
 }
 function SendConfirmationEmail(id,email){
 
@@ -354,12 +355,12 @@ function SendConfirmationEmail(id,email){
 }
 function VerifiedEmailAddress(response,id,email){
 
-  var sid = Object(id).toString();
-  console.log(sid);
+  //var sid = Object(id).toString();
+  //console.log(sid);
 
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
   var collection = connection.collection('EmailAddresses');
-  collection.update({ _id: sid}, {$set : {Verified: true} }, function(error,result){
+  collection.update({ _id: id}, {$set : {Verified: true} }, function(error,result){
   // collection.update(where, {$set:entity}, function(error,result){
     if(error)
     {

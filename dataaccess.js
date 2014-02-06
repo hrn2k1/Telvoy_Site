@@ -7,6 +7,7 @@ var monk = require('monk');
  var mailer= require('./mailsender.js');
  var parser=require('./parser.js');
  var mimelib = require("mimelib-noiconv");
+ var BSON = require('mongodb').BSONPure;
 
 
 function getRemainderTime(response,userID)
@@ -355,12 +356,12 @@ function SendConfirmationEmail(id,email){
 }
 function VerifiedEmailAddress(response,id,email){
 
-  //var sid = Object(id).toString();
-  //console.log(sid);
+  var sid = BSON.ObjectID.createFromHexString(id);
 
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
   var collection = connection.collection('EmailAddresses');
-  collection.update({ _id: id}, {$set : {Verified: true} }, function(error,result){
+  // collection.findOne({ _id: sid}, function(error, result){
+  collection.update({ _id: sid,EmailID:email}, {$set : {Verified: true} }, function(error,result){
   // collection.update(where, {$set:entity}, function(error,result){
     if(error)
     {
@@ -931,7 +932,32 @@ function insertInvitationEntity(entity,addresses)
       }
       else{
         utility.log("Invitation already exist for AccessCode: "+result_invite.AccessCode);
-        //Invitations.update({"_id":result_invite._id}, {$set:entity}, function(error,result){});
+        Invitations.update({"_id":result_invite._id}, {$set:entity}, function(error,result){
+          if(error)
+          {
+            utility.log("update error in insertInvitationEntity() error: " + error, 'ERROR');
+            connection.close();
+          }
+          else
+          {
+            utility.log('update invitation result.........');
+            console.log(result);
+            utility.log("Invitation updated Successfully");
+            Invitees.remove({Invitations_id:result_invite._id},function(err,res){
+              if(err){
+              utility.log("delete error in insertInvitationEntity() error: " + error, 'ERROR');
+              connection.close();
+              }
+              else{
+                utility.log('deleted all previous invitees.')
+                 InsertMeetingInvitees(EmailAddresses,Invitees,result_invite._id,addresses,0,null);
+              }
+            });
+           
+            //connection.close();  
+            
+          }
+        });
       }
     }
   });

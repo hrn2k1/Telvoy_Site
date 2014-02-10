@@ -600,9 +600,10 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
 });
 }
 function deleteDialInNumber(response,id){
+  var sid = BSON.ObjectID.createFromHexString(id);
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
   var collection = connection.collection('DialInNumbers');
-  collection.remove({_id:id},function(error, result) {
+  collection.remove({_id:sid,function(error, result) {
     if(error)
     {
       utility.log("deleteDialInNumber() error: " + error,'ERROR');

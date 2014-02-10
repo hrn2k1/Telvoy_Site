@@ -8,6 +8,7 @@ var monk = require('monk');
  var parser=require('./parser.js');
  var mimelib = require("mimelib-noiconv");
  var BSON = require('mongodb').BSONPure;
+var fs = require('fs');
 
 
 function getRemainderTime(response,userID)
@@ -379,18 +380,38 @@ function VerifiedEmailAddress(response,id,email){
       {
       utility.log("VerifiedEmailAddress updated Successfully to true");
 
-      response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Success\",\"Message\":\"Your Email Addreess '+ email +' Verified Successfully\"}');
-      response.end();
+      fs.readFile("crm/emailverifyok.html" ,function(error,data){
+            if(error){
+               response.writeHead(404,{"Content-type":"text/plain"});
+               response.end("Sorry the page was not found"+error);
+            }else{
+               response.writeHead(202,{"Content-type":"text/html"});
+               response.end(data);
+
+            }
+        });
+
+      // response.setHeader("content-type", "text/plain");
+      // response.write('{\"Status\":\"Success\",\"Message\":\"Your Email Addreess '+ email +' Verified Successfully\"}');
+      // response.end();
       connection.close();
       }
       else
       {
         utility.log("VerifiedEmailAddress not updated due to wrong info");
+        fs.readFile("crm/emailverifyfail.html" ,function(error,data){
+            if(error){
+               response.writeHead(404,{"Content-type":"text/plain"});
+               response.end("Sorry the page was not found"+error);
+            }else{
+               response.writeHead(202,{"Content-type":"text/html"});
+               response.end(data);
 
-        response.setHeader("content-type", "text/plain");
-        response.write('{\"Status\":\"Unsuccess\",\"Message\":\"The link is incorrect or has been expired.\"}');
-        response.end();
+            }
+        });
+        // response.setHeader("content-type", "text/plain");
+        // response.write('{\"Status\":\"Unsuccess\",\"Message\":\"The link is incorrect or has been expired.\"}');
+        // response.end();
         connection.close();
       }
     }

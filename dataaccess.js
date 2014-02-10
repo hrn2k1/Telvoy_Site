@@ -175,6 +175,7 @@ var invite_entity = {
                 FromEmail: OrganizarEmail,
                 InvDate : StartTime,
                 InvTime : StartTime,
+                EndTime: EndTime,
                 Subject: Subject,
                 Toll: utility.isNull(out['toll'],''),
                 PIN: utility.isNull(out['pin'],''),
@@ -818,7 +819,7 @@ function getInvitations(response,userID,id){
             Invitations_ids.push(result[i].Invitations_id);
           };
 
-          Invitations.find({ _id: {$in : Invitations_ids}, InvTime : {$gte : new Date()}}).toArray(
+          Invitations.find({ _id: {$in : Invitations_ids}, EndTime : {$gte : new Date()}}).toArray(
           function (error, result) {
           if(error)
           {

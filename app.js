@@ -29,6 +29,38 @@ var http = require("http");
 var url = require("url");
 var fs = require('fs');
 
+var Sessions = require("sessions"), sessionHandler = new Sessions(); // memory store by default
+
+
+    function CheckSession(response,session,targetpage){
+        console.log("CheckSession...");
+        console.log(session.get('username'));
+        if(session.get('username')==null){
+           
+            fs.readFile("crm/login.html" ,function(error,data){
+                    if(error){
+                       response.writeHead(404,{"Content-type":"text/plain"});
+                       response.end("Sorry the page was not found"+error);
+                    }else{
+                       response.writeHead(202,{"Content-type":"text/html"});
+                       response.end(data);
+
+                    }
+                });
+        }
+        else{
+            fs.readFile(targetpage ,function(error,data){
+            if(error){
+                response.writeHead(404,{"Content-type":"text/plain"});
+                response.end("Sorry the page was not found"+error);
+            }else{
+                response.writeHead(202,{"Content-type":"text/html"});
+                response.end(data);
+
+            }
+            });  
+        }
+    }
 
 process.on('uncaughtException', function (err) {
     fs.writeFile("test.txt",  err, "utf8");    
@@ -41,8 +73,64 @@ http.createServer(function(request, response) {
         utility.log('Requested URL: '+request.url);
         utility.log('Requested Query String: '+ url.parse(request.url).query);
     }
+
+    //console.log('Session module');
+    //console.log(new Sessions());
+     sessionHandler.httpRequest(request, response,function(err, session){
+        //console.log(err);
+        //console.log(session);
+
+        if (err) {
+        return res.end("session error");
+        }
+
+        console.log("SessionID : %s , URL: %s", session.uid(), request.url);
+
+        //response.end(request.url);
+     session.set('user','hArUn');
+   
+     //console.log(session);
     //console.log(request.url);
-    if (uri.toLowerCase() === "/conf") {
+    if(uri.toLowerCase()=="/login")
+            {
+                
+                fs.readFile("crm/login.html" ,function(error,data){
+                    if(error){
+                       response.writeHead(404,{"Content-type":"text/plain"});
+                       response.end("Sorry the page was not found"+error);
+                    }else{
+                       response.writeHead(202,{"Content-type":"text/html"});
+                       response.end(data);
+
+                    }
+                });
+            }
+    if(uri.toLowerCase()=="/logout")
+            {
+                session.set('username',null);
+                fs.readFile("crm/login.html" ,function(error,data){
+                    if(error){
+                       response.writeHead(404,{"Content-type":"text/plain"});
+                       response.end("Sorry the page was not found"+error);
+                    }else{
+                       response.writeHead(202,{"Content-type":"text/html"});
+                       response.end(data);
+
+                    }
+                });
+            }
+    else if(uri.toLowerCase()=="/admin")
+            {
+                CheckSession(response,session,"crm/admin.html")
+            
+            }
+    else if (uri.toLowerCase() === "/authenticate") {
+        var query = url.parse(request.url).query;
+        var params=querystring.parse(query);
+          dao.AuthenticateUser(response,session,utility.isNull(params['username'],''),utility.isNull(params['pass'],''));
+         
+    }
+    else if (uri.toLowerCase() === "/conf") {
         var query = url.parse(request.url).query;
         var params=querystring.parse(query);
           dao.getInvitations(response,utility.Nullify(params['userID']),utility.Nullify(params['id']));
@@ -182,16 +270,17 @@ http.createServer(function(request, response) {
     }
     else if(uri.toLowerCase()=="/adddialinnumbers")
     {
-        fs.readFile("crm/DialInNumbers.html" ,function(error,data){
-            if(error){
-               response.writeHead(404,{"Content-type":"text/plain"});
-               response.end("Sorry the page was not found"+error);
-            }else{
-               response.writeHead(202,{"Content-type":"text/html"});
-               response.end(data);
+        CheckSession(response,session,"crm/DialInNumbers.html");
+        // fs.readFile("crm/DialInNumbers.html" ,function(error,data){
+        //     if(error){
+        //        response.writeHead(404,{"Content-type":"text/plain"});
+        //        response.end("Sorry the page was not found"+error);
+        //     }else{
+        //        response.writeHead(202,{"Content-type":"text/html"});
+        //        response.end(data);
 
-            }
-        });
+        //     }
+        // });
     }
     else if (uri.toLowerCase() === "/adddialinnumbersaction") {
         var query = url.parse(request.url).query;
@@ -277,16 +366,19 @@ http.createServer(function(request, response) {
             }
         else if(uri.toLowerCase()=="/assignpin")
             {
-                fs.readFile("crm/assignpin.html" ,function(error,data){
-                    if(error){
-                       response.writeHead(404,{"Content-type":"text/plain"});
-                       response.end("Sorry the page was not found"+error);
-                    }else{
-                       response.writeHead(202,{"Content-type":"text/html"});
-                       response.end(data);
+                CheckSession(response,session,"crm/assignpin.html");
+                // console.log('Session.....');
+                // console.log(session.uid()+" >> "+session.get('userid'));
+                // fs.readFile("crm/assignpin.html" ,function(error,data){
+                //     if(error){
+                //        response.writeHead(404,{"Content-type":"text/plain"});
+                //        response.end("Sorry the page was not found"+error);
+                //     }else{
+                //        response.writeHead(202,{"Content-type":"text/html"});
+                //        response.end(data);
 
-                    }
-                });
+                //     }
+                // });
             }
         /////////////////////////
     else {
@@ -294,7 +386,12 @@ http.createServer(function(request, response) {
         response.write(JSON.stringify(url.parse(request.url)));
         response.end();
     }
+    });
 }).listen(process.env.port || 8080);
+
+sessionHandler.on("expired", function (uid) {
+console.log("Session ID: %s ! expired", uid);
+});
 
 function RightString(str, n){
         if (n <= 0)

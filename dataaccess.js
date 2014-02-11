@@ -11,6 +11,24 @@ var monk = require('monk');
 var fs = require('fs');
 
 
+function AuthenticateUser(response,session,username,pass){
+ var toady=new Date();
+ if(username=='admin' && pass=='pass'){
+      session.set('username',username);
+      utility.log("AuthenticateUser OK.");
+      response.setHeader("content-type", "application/json");
+      response.write('{\"Status\":\"Success\"}');
+      response.end();
+ }
+ else{
+      utility.log("AuthenticateUser Failed.");
+      response.setHeader("content-type", "application/json");
+      response.write('{\"Status\":\"User name or password is wrong. Please try again.\"}');
+      response.end();
+ }
+
+}
+
 function getRemainderTime(response,userID)
 {
  
@@ -1216,3 +1234,4 @@ exports.getRemainderTime=getRemainderTime;
 exports.getPinlessInvitation=getPinlessInvitation;
 exports.getPinOfInvitation=getPinOfInvitation;
 exports.updatePIN=updatePIN;
+exports.AuthenticateUser=AuthenticateUser;

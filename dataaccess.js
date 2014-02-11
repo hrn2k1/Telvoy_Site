@@ -12,20 +12,36 @@ var fs = require('fs');
 
 
 function AuthenticateUser(response,session,username,pass){
- var toady=new Date();
- if(username=='admin' && pass=='pass'){
-      session.set('username',username);
-      utility.log("AuthenticateUser OK.");
+ 
+ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   var collection = connection.collection('Logins');
+  collection.findOne({UserName:username,Password:pass}, function(error, result) {
+    if(error){
+      utility.log("Error in find logins : "+error,'ERROR');
       response.setHeader("content-type", "application/json");
-      response.write('{\"Status\":\"Success\"}');
+      response.write('{\"Status\":\"Internal Server Error. Please try again.\"}');
       response.end();
- }
- else{
-      utility.log("AuthenticateUser Failed.");
-      response.setHeader("content-type", "application/json");
-      response.write('{\"Status\":\"User name or password is wrong. Please try again.\"}');
-      response.end();
- }
+    }
+    else{
+          if(result !=null){
+            session.set('username',username);
+            utility.log("AuthenticateUser OK.");
+            response.setHeader("content-type", "application/json");
+            response.write('{\"Status\":\"Success\"}');
+            response.end();
+          }
+          else{
+            utility.log("AuthenticateUser Failed.");
+            response.setHeader("content-type", "application/json");
+            response.write('{\"Status\":\"User name or password is wrong. Please try again.\"}');
+            response.end();
+          }
+
+    }
+
+  });
+});
+ 
 
 }
 

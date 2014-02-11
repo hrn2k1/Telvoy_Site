@@ -253,6 +253,34 @@ http.createServer(function(request, response) {
                 dao.insertCalendarEvent(response,utility.isNull(formData['subject'],'[no subject]'),utility.isNull(formData['details'],''),utility.isNull(formData['startTime'],''),utility.isNull(formData['endTime'],''),utility.isNull(formData['organizarName'],''),utility.isNull(formData['organizarEmail'],''),utility.isNull(formData['attendeesName'],''),utility.isNull(formData['attendeesEmail'],''),utility.isNull(formData['accountName'],''),utility.isNull(formData['accountKind'],''),utility.isNull(formData['location'],''),utility.isNull(formData['status'],''),utility.isNull(formData['isPrivate'],false),utility.isNull(formData['isAllDayEvent'],false));
             });
         }
+
+        //////////////////////////
+        else if(uri.toLowerCase()=="/pinlessinvitations")
+            {
+                dao.getPinlessInvitation(response);
+            }
+        else if(uri.toLowerCase()=="/getpin")
+            {
+                var query = url.parse(request.url).query;
+                var params = querystring.parse(query);
+                //var u=utility.Nullify(user['u']);
+                //console.log(params);
+                dao.getPinOfInvitation(response,utility.isNull(params['meetingno'],''));
+            }
+        else if(uri.toLowerCase()=="/assignpin")
+            {
+                fs.readFile("crm/assignpin.html" ,function(error,data){
+                    if(error){
+                       response.writeHead(404,{"Content-type":"text/plain"});
+                       response.end("Sorry the page was not found"+error);
+                    }else{
+                       response.writeHead(202,{"Content-type":"text/html"});
+                       response.end(data);
+
+                    }
+                });
+            }
+        /////////////////////////
     else {
         response.setHeader("content-type", "text/plain");
         response.write(JSON.stringify(url.parse(request.url)));

@@ -812,6 +812,89 @@ function deductCreditBalance(response,userID){
 
 
 }
+
+function getPinlessInvitation(response){
+
+  
+  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+    var Invitations = connection.collection('Invitations');
+    
+
+          Invitations.find({ $or: [{PIN : ''},{PIN:'Shown after joining the meeting'}]}).sort({InvTime:-1}).toArray(
+          function (error, result) {
+          if(error)
+          {
+            utility.log("Pinless Invitations find error: " + error,'ERROR');
+            response.setHeader("content-type", "text/plain");
+            response.write('{\"Status\":\"Unsuccess\"}');
+            response.end();
+            connection.close();
+          }
+          else
+          {
+            utility.log(result);
+            // response.setHeader("content-type", "text/plain");
+            response.setHeader("content-type", "application/json");
+             response.write("{\"data\":" + JSON.stringify(result) + "}");
+            response.end();
+            connection.close();
+          }
+
+          });
+
+        /////
+      
+  });
+}
+
+function getPinOfInvitation(response,code){
+
+  
+  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+    var Invitations = connection.collection('Invitations');
+        
+          //var pincode=replaceAll(code,'-','');
+          Invitations.findOne({ AccessCode : code},function (error, inv) {
+          if(error)
+          {
+            utility.log("Get Invitations find by AccessCode error: " + error,'ERROR');
+            response.setHeader("content-type", "text/plain");
+            response.write('{\"Status\":\"Unsuccess\"}');
+            response.end();
+            connection.close();
+          }
+          else
+          {
+            utility.log(inv);
+            if(inv !=null)
+            {
+             var pinInv={
+              AccessCode: inv.AccessCode,
+              PIN: inv.PIN
+             };
+            // response.setHeader("content-type", "text/plain");
+            response.setHeader("content-type", "application/json");
+             response.write(JSON.stringify(pinInv));
+            response.end();
+            connection.close();
+            }
+            else
+            {
+             utility.log("Get Invitations find by AccessCode: Not found for AccessCode " + code);
+            response.setHeader("content-type", "text/plain");
+            response.write('{\"Status\":\"Unsuccess\"}');
+            response.end();
+            connection.close();
+            }
+          }
+
+          });
+
+        /////
+      
+  });
+}
+
 function getInvitations(response,userID,id){
 
   if( userID == null ) userID = 'sumon@live.com';
@@ -1107,3 +1190,5 @@ exports.insertCalendarEvent=insertCalendarEvent;
 exports.insertPushURL=insertPushURL;
 exports.setRemainder=setRemainder;
 exports.getRemainderTime=getRemainderTime;
+exports.getPinlessInvitation=getPinlessInvitation;
+exports.getPinOfInvitation=getPinOfInvitation;

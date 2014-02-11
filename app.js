@@ -49,7 +49,7 @@ var Sessions = require("sessions"), sessionHandler = new Sessions(); // memory s
                 });
         }
         else{
-            utility.log("SessionID : %s ", session.uid());
+            utility.log("SessionID : "+ session.uid());
             fs.readFile(targetpage ,function(error,data){
             if(error){
                 response.writeHead(404,{"Content-type":"text/plain"});

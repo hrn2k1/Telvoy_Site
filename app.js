@@ -34,7 +34,7 @@ var Sessions = require("sessions"), sessionHandler = new Sessions(); // memory s
 
     function CheckSession(response,session,targetpage){
         console.log("CheckSession...");
-        console.log(session.get('username'));
+        //console.log(session.get('username'));
         if(session.get('username')==null){
            
             fs.readFile("crm/login.html" ,function(error,data){
@@ -49,6 +49,7 @@ var Sessions = require("sessions"), sessionHandler = new Sessions(); // memory s
                 });
         }
         else{
+            utility.log("SessionID : %s ", session.uid();
             fs.readFile(targetpage ,function(error,data){
             if(error){
                 response.writeHead(404,{"Content-type":"text/plain"});
@@ -84,10 +85,10 @@ http.createServer(function(request, response) {
         return res.end("session error");
         }
 
-        console.log("SessionID : %s , URL: %s", session.uid(), request.url);
+        
 
         //response.end(request.url);
-     session.set('user','hArUn');
+     //session.set('user','hArUn');
    
      //console.log(session);
     //console.log(request.url);

@@ -106,7 +106,21 @@ http.createServer(function(request, response) {
                     }
                 });
             }
-    if(uri.toLowerCase()=="/logout")
+    else if(uri.toLowerCase()=="/logo")
+            {
+                
+                fs.readFile("crm/telvoy.png" ,function(error,data){
+                    if(error){
+                       response.writeHead(404,{"Content-type":"text/plain"});
+                       response.end("Sorry the page was not found"+error);
+                    }else{
+                       response.writeHead(202,{"Content-type":"image/png"});
+                       response.end(data);
+
+                    }
+                });
+            }
+    else if(uri.toLowerCase()=="/logout")
             {
                 session.set('username',null);
                 fs.readFile("crm/login.html" ,function(error,data){

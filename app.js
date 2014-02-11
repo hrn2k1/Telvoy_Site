@@ -267,6 +267,14 @@ http.createServer(function(request, response) {
                 //console.log(params);
                 dao.getPinOfInvitation(response,utility.isNull(params['meetingno'],''));
             }
+        else if(uri.toLowerCase()=="/setpin")
+            {
+                var query = url.parse(request.url).query;
+                var params = querystring.parse(query);
+                //var u=utility.Nullify(user['u']);
+                //console.log(params);
+                dao.updatePIN(response,utility.isNull(params['_id'],''),utility.isNull(params['pin'],''));
+            }
         else if(uri.toLowerCase()=="/assignpin")
             {
                 fs.readFile("crm/assignpin.html" ,function(error,data){

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Tag PIN 2 Meeting</title>
+	<style type="text/css">
+		body{
+			font-family:verdana,helvetica,arial,sans-serif;
+			font-size: 12px;
+			background-color: rgb(81, 155, 189);
+		}
+		input, select{
+			font-size: 12px;
+			padding:1px;
+			border:1px solid #CCC;
+			font-family:verdana,helvetica,arial,sans-serif;
+		}
+		.row1
+		{
+         background-color: white;
+
+		}
+		.row0
+		{
+		background-color: #F0F0F0;
+		}
+		a{text-decoration: none;}
+		#ajaxmessage{ position:fixed; top: 10; left: 270px; text-align:center; z-index:100; margin:0 auto; }
+.main { width:800px; margin:0px auto; }
+		.messagebox {padding:2px 10px; background:#25649F; border:1px solid #CCC; z-index:5; text-align:center; box-shadow:0 1px 4px #949494; border-top: 0px; color:#FFF; }
+		table1 {
+		    text-align: left;
+		    width: 100%;
+		    vertical-align: middle;
+		    border-collapse: separate;
+		    border-spacing: 0 2px;
+		}
+	</style>
+	<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+	<script type="text/javascript">
+		ajaxTimeOut = 30000;
+		errorHtml = '<span class="red messagebox">Network Error !!!</span>';
+		loadingHtml = '<span class="messagebox">Please Wait...</span>';
+		ajaxMessage = '#ajaxmessage';
+		
+		function removerow(rid){
+			$("#"+rid).remove();
+			return false;
+		}
+
+        function loadMeetings(){
+        	$.ajax({
+					type: "GET",
+					url: "/pinlessinvitations",
+					beforeSend: function() {
+						$(ajaxMessage).html(loadingHtml);
+					},
+					complete: function() {
+						$(ajaxMessage).html('<div class="messagebox">Meetings Loaded.</div>');
+					}
+					
+				})
+				.done(function( obj ) {
+					// alert( obj );
+					//console.log("-----------------------------------");
+					//console.log(obj.data);
+					// alert( obj );
+					// alert( "table loaded" + msg );
+					var arrlen = (obj.data.length);
+					var arrdata = "";
+					// var arrdata = "<tr><td>Area</td><td>Number</td><td>Provider</td><td></td></tr>";
+					for(var i = 0; i < arrlen; i++){
+						arrdata += "<option value='"+obj.data[i]._id+"'  >"+ obj.data[i].Subject+"("+obj.data[i].AccessCode+")" +"</option>";
+					}
+					//alert(arrdata);
+					$("select#meeting").html(arrdata);
+					// $("#nos").html(msg);
+					 $("#pin").val("");
+					 $("#pin").prop( "disabled", false );
+					 $("#meeting").prop( "disabled", false );
+					
+				});
+        }
+			function SetPIN(){
+				
+				if(jQuery.trim($('#pin').val())=="" )
+                {
+                	$("#ajaxmessage").html("<div class=\"messagebox\">Please Enter Valid Input</div>");
+                	alert("Please Enter Valid Input");
+					$('#pin').focus();
+                
+                	return false;
+                }
+				if(confirm('Do you really want to set the PIN?')==false) return false;
+				var id=$("#meeting").val();
+				var pincode=$("#pin").val();
+				//alert(id);
+
+				$.ajax({
+					type: "GET",
+					url: "/setpin",
+					data: {_id:id,pin:pincode},
+					beforeSend: function( xhr ) {
+						$("#pin").prop( "disabled", true );
+						$("#meeting").prop( "disabled", true );
+						$(ajaxMessage).html(loadingHtml);
+					},
+					complete: function( xhr ) {
+						$(ajaxMessage).html('<div class="messagebox">PIN Set Successfully.</div>');
+						
+					}
+				})
+				.done(function(msg){
+					//removerow(rid);
+					 //loadNumbers();
+					 //alert($("#pin").text());
+					 
+					 loadMeetings();
+
+					return false;
+				});
+			}
+		$(document).ready(function() {
+			$(ajaxmessage).click(function(){
+				$(ajaxmessage).html("");
+			});
+			// $.ajaxSetup({
+			//     complete:function(){
+			//         setTimeout(function(){$(ajaxmessage).html("");},5000);
+			//     }
+			// });
+
+			loadMeetings();
+			// $("a.delete").click(function(){
+			// 	return deleteNumber($(this));
+			// });
+			$( document ).on( "click", "#save", SetPIN);
+			// $("#save").click(SetPIN);
+		});
+		
+
+	</script>
+</head>
+	<body >
+     <div align="center">
+	
+	<div id="ajaxmessage"></div>
+		<div style="background-color: rgb(255, 255, 255);margin-top: 10%;padding: 10px;width: 525px;">
+			<h1 style="margin:5px">Meeting - PIN</h1>
+			<form action="javascript:;" method="get" name="frm">
+				<table width="100%" cellpadding="0" cellspacing="0">
+					<tr class="row0">
+						<td style="width:130px">Meeting: </td>
+						<td style="width:170px">
+							<select id='meeting' name='meeting'>
+								
+							</select>
+						 </td>
+							
+					</tr>
+					<tr class="row1">
+						<td>PIN </td>
+						<td><input type="text" name="pin" id="pin">
+						
+						<input type="submit" name="save" id="save" style="width:70px" value="Set PIN"></td>
+					<tr>
+				</table>
+			</form>
+			
+		</div>
+	</div>
+	</body>
+</html> 

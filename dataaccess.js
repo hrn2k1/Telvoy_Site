@@ -894,7 +894,30 @@ function getPinOfInvitation(response,code){
       
   });
 }
-
+function updatePIN(response,id,pin){
+  var sid = BSON.ObjectID.createFromHexString(id);
+  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+  var collection = connection.collection('Invitations');
+  collection.update({_id:sid},{$set:{PIN:pin}},function(error, result) {
+    if(error)
+    {
+      utility.log("updatePIN() error: " + error,'ERROR');
+      response.setHeader("content-type", "text/plain");
+      response.write('{\"Status\":\"Unsuccess\"}');
+      response.end();
+      connection.close();
+    }
+    else
+    {
+      utility.log("Invitation updated successfully by PIN");
+      response.setHeader("content-type", "application/json");
+      response.write('{\"Status\":\"Successfully Set the PIN.\"}');
+      response.end();
+      connection.close();
+    }
+  });
+});
+}
 function getInvitations(response,userID,id){
 
   if( userID == null ) userID = 'sumon@live.com';
@@ -1192,3 +1215,4 @@ exports.setRemainder=setRemainder;
 exports.getRemainderTime=getRemainderTime;
 exports.getPinlessInvitation=getPinlessInvitation;
 exports.getPinOfInvitation=getPinOfInvitation;
+exports.updatePIN=updatePIN;

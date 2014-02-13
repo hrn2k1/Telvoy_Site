@@ -664,6 +664,9 @@ function getTollNo(response,meetingno,area,city,dialInProvider)
     "Country": area,
     "MeetingID": meetingno
   };
+  var where4 = {
+    "MeetingID": meetingno
+  };
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
   var collection = connection.collection('DialInNumbers');
   var MeetingTolls = connection.collection('MeetingTolls');
@@ -723,10 +726,38 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
               else{
                 utility.log("getTollNo("+meetingno+","+area+"): ");
                 console.log(result3);
+                if(result3 !=null)
+                {
                 response.setHeader("content-type", "text/plain");
                 response.write(JSON.stringify(result3));
                 response.end();
                 connection.close();
+                }
+                else{
+
+                  ////////////////////Start Pick By Meeting ID only//////////////////////
+                  MeetingTolls.findOne(where4,function(error4,result4){
+                  if(error3)
+                    {
+                    utility.log("getTollNo("+meetingno+") error: " + error4,'ERROR');
+                    response.setHeader("content-type", "text/plain");
+                    response.write('{\"Status\":\"Unsuccess\"}');
+                    response.end();
+                    connection.close();
+                    }
+                    else
+                    {
+                      utility.log("getTollNo("+meetingno+"): ");
+                      console.log(result4);
+                       response.setHeader("content-type", "text/plain");
+                        response.write(JSON.stringify(result4));
+                        response.end();
+                        connection.close();
+                    }
+                  });
+                  ////////////////////End Pick By Meeting ID only//////////////////////
+
+                }
               }
           });
         ///////////////End Pick with Country FROM MeetingTolls/////////////////

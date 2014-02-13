@@ -240,11 +240,11 @@ http.createServer(function(request, response) {
     }
     else if (uri.toLowerCase() === "/toll") {
         var query = url.parse(request.url).query;
-        var user=querystring.parse(query);
+        var params=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //console.log(u);
 
-        dao.getTollNo(response,utility.isNull(user['area'],''),utility.isNull(user['dialInProvider'],'WebEx'));
+        dao.getTollNo(response,utility.isNull(params['meetingno'],''),utility.isNull(params['area'],''),utility.isNull(params['city'],''),utility.isNull(params['dialInProvider'],'WebEx'));
         
     }
     else if (uri.toLowerCase() === "/meetingtoll") {
@@ -311,7 +311,7 @@ http.createServer(function(request, response) {
         //var u=utility.Nullify(user['u']);
         
 
-        dao.AddDialInNumbersAction(response,utility.isNull(user['area'],''),utility.isNull(user['number'],''),utility.isNull(user['provider'],'WebEx'));
+        dao.AddDialInNumbersAction(response,utility.isNull(user['area'],''),utility.isNull(user['city'],''),utility.isNull(user['number'],''),utility.isNull(user['provider'],'WebEx'));
         
     }
     else if(uri.toLowerCase() === "/dialinnumbers") {

@@ -648,19 +648,30 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
 // http://localhost:8080/toll?area=Australia&dialInProvider=WebEx
 // {"Tolls":[{"ID":1,"Area":"Australia","Number":"+61 29037 1692","Provider":"WebEx"}]}
 
-function getTollNo(response,area,dialInProvider)
+function getTollNo(response,meetingno,area,city,dialInProvider)
 {
   
-  var entity = {
+  var where1 = {
+    "Area": area,
+    "City":city,
+    "Provider": dialInProvider
+  };
+  var where2 = {
     "Area": area,
     "Provider": dialInProvider
   };
+  var where3 = {
+    "Country": area,
+    "MeetingID": meetingno
+  };
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
   var collection = connection.collection('DialInNumbers');
-  collection.findOne(entity, function(error, result) {
-    if(error)
+  var MeetingTolls = connection.collection('MeetingTolls');
+  /////////Start Pick with Country and City From Global DialIns////////////////
+  collection.findOne(where1, function(error1, result1) {
+    if(error1)
     {
-      utility.log("getTollNo() error: " + error,'ERROR');
+      utility.log("getTollNo("+area+","+city+","+dialInProvider+")  error: " + error1,'ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -668,13 +679,65 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
     }
     else
     {
-      utility.log(result);
+      utility.log("getTollNo("+area+","+city+","+dialInProvider+"): ");
+      console.log(result1);
+      if(result1 !=null){
+        response.setHeader("content-type", "text/plain");
+        response.write(JSON.stringify(result1));
+        response.end();
+        connection.close();
+    }
+    else{
+
+      ///////////////Start Pick with only Country FROM Global DialIns/////////
+    collection.findOne(where2, function(error2, result2) {
+    if(error2)
+    {
+      utility.log("getTollNo("+area+","+dialInProvider+") error: " + error2,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write(JSON.stringify(result));
+      response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
       connection.close();
     }
+    else
+    {
+        utility.log("getTollNo("+area+","+dialInProvider+"): ");
+        console.log(result2);
+        if(result2 !=null){
+        response.setHeader("content-type", "text/plain");
+        response.write(JSON.stringify(result2));
+        response.end();
+        connection.close();
+      }
+      else{
+        ////////////////Start Pick with Country FROM MeetingTolls///////////////
+          MeetingTolls.findOne(where3,function(error3,result3){
+            if(error3)
+              {
+              utility.log("getTollNo("+meetingno+","+area+") error: " + error3,'ERROR');
+              response.setHeader("content-type", "text/plain");
+              response.write('{\"Status\":\"Unsuccess\"}');
+              response.end();
+              connection.close();
+              }
+              else{
+                utility.log("getTollNo("+meetingno+","+area+"): ");
+                console.log(result3);
+                response.setHeader("content-type", "text/plain");
+                response.write(JSON.stringify(result3));
+                response.end();
+                connection.close();
+              }
+          });
+        ///////////////End Pick with Country FROM MeetingTolls/////////////////
+      }
+    }
   });
+      //////////End Pick with only Country FROM Global DialIns///////////////
+    }
+    }
+  });
+  ///////////////////End Pick with Country and City From Global DialIns///////////
 });
 }
 function deleteDialInNumber(response,id){
@@ -747,12 +810,13 @@ function getDialInNumbers(response)
 });
 }
 
-function AddDialInNumbersAction(response,area,number,dialInProvider)
+function AddDialInNumbersAction(response,area,city,number,dialInProvider)
 {
   //console.log(area+' : '+dialInProvider);
  
   var entity = {
     "Area": area,
+    "City": city,
     "Number":number,
     "Provider": dialInProvider
   };

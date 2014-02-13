@@ -247,6 +247,13 @@ http.createServer(function(request, response) {
         dao.getTollNo(response,utility.isNull(user['area'],''),utility.isNull(user['dialInProvider'],'WebEx'));
         
     }
+    else if (uri.toLowerCase() === "/meetingtoll") {
+        var query = url.parse(request.url).query;
+        var params=querystring.parse(query);
+        dao.getMeetingToll(response,utility.isNull(params['meetingno'],''),utility.isNull(params['country'],''));
+        
+    }
+    
     else if (uri.toLowerCase() === "/credit") {
         var query = url.parse(request.url).query;
         var user=querystring.parse(query);

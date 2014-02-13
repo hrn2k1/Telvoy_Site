@@ -11,6 +11,29 @@ var monk = require('monk');
 var fs = require('fs');
 
 
+function getMeetingToll(response,meetingno,country){
+  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   var collection = connection.collection('MeetingTolls');
+  collection.findOne({MeetingID:meetingno,Country:country}, function(error, result) {
+    if(error){
+      utility.log("Error in find MeetingTolls : "+error,'ERROR');
+      response.setHeader("content-type", "text/plain");
+      response.write('{\"Status\":\"Unsuccess\"}');
+      response.end();
+      connection.close();
+    }
+    else{
+      utility.log('Meeting Toll for MeetingID: '+meetingno+' and country: '+country);
+      console.log(result);
+      response.setHeader("content-type", "text/plain");
+      response.write(JSON.stringify(result));
+      response.end();
+      connection.close();
+    }
+  });
+});
+}
+
 function AuthenticateUser(response,session,username,pass){
  
  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
@@ -1271,3 +1294,4 @@ exports.getPinlessInvitation=getPinlessInvitation;
 exports.getPinOfInvitation=getPinOfInvitation;
 exports.updatePIN=updatePIN;
 exports.AuthenticateUser=AuthenticateUser;
+exports.getMeetingToll=getMeetingToll;

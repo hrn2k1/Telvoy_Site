@@ -264,7 +264,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
     response.write('{\"Status\":\"Success\"}');
     response.end();
     connection.close();
-     insertInvitationEntity(invite_entity,addresses);
+     insertInvitationEntity(invite_entity,addresses,out['tolls']);
   }
 });
 });
@@ -1178,14 +1178,43 @@ else{
 
 
 
-function insertInvitationEntity(entity,addresses)
+function InsertMeetingTolls(localtolls){
+  if(localtolls=='undefined') return;
+  if(localtolls==null) return;
+  if(localtolls.length==0) return;
+  utility.log("Meeting Tolls to insert");
+  console.log(localtolls);
+   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+      var Tolls = connection.collection('MeetingTolls');
+      Tolls.insert(localtolls,function(err,rslt){
+          if(err){
+            utility.log('Insert MeetingTolls Error: '+err,'ERROR');
+            connection.close();
+          }
+          else{
+            utility.log("Successfully Inserted "+localtolls.length+" Meeting Tolls.");
+            connection.close();
+          }
+      });
+      
+  });
+}
+
+function insertInvitationEntity(entity,addresses,localtolls)
 {
+   if(localtolls!=null && localtolls.length>0){
+    for (var i = 0; i < localtolls.length; i++) {
+      localtolls[i].MeetingID=entity.AccessCode;
+    };
+   }
+
+
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
   var Invitations = connection.collection('Invitations');
   var Invitees = connection.collection('Invitees');
   var EmailAddresses = connection.collection('EmailAddresses');
 
-   EmailAddresses.findOne({"EmailID":entity.FromEmail},function(senderError,sender){
+ EmailAddresses.findOne({"EmailID":entity.FromEmail},function(senderError,sender){
  if(senderError){
   utility.log('Error in finding sender email in whitelist','ERROR');
   return;
@@ -1198,9 +1227,9 @@ function insertInvitationEntity(entity,addresses)
   }
   else{
     utility.log('Sender Email '+entity.FromEmail+' is found in whitelist with userID '+sender.UserID);
-    //////////////////////Start Invitation Process/////////////  
+    //////////////////////Start Invitation Process/////////////
 
-  Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
+    Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
     if(error){
       utility.log("Error in find invitation with AccessCode to check duplicate" + error,'ERROR');
        connection.close();
@@ -1218,7 +1247,7 @@ function insertInvitationEntity(entity,addresses)
             utility.log('insert invitation result.........');
             console.log(result);
             utility.log("Invitation inserted Successfully");
-            InsertMeetingInvitees(EmailAddresses,Invitees,result[0]._id,addresses,0,null);
+            InsertMeetingInvitees(EmailAddresses,Invitees,result[0]._id,addresses,0,function(){ InsertMeetingTolls(localtolls);});
             //connection.close();  
             
           }
@@ -1244,7 +1273,7 @@ function insertInvitationEntity(entity,addresses)
               }
               else{
                 utility.log('deleted all previous invitees.')
-                 InsertMeetingInvitees(EmailAddresses,Invitees,result_invite._id,addresses,0,null);
+                 InsertMeetingInvitees(EmailAddresses,Invitees,result_invite._id,addresses,0,function(){ InsertMeetingTolls(localtolls);});
               }
             });
            
@@ -1256,16 +1285,17 @@ function insertInvitationEntity(entity,addresses)
     }
   });
 
- //////////////////////End Invitation Process//////////////
+    //////////////////////End Invitation Process//////////////
   }
  }
 
  });
+  
 
+  
 });
 
 }
-
 
 
 function insertInvitationEntity_backdated(entity,addresses)

@@ -1,23 +1,25 @@
 var SITE_ROOT_URL='http://telvoym.azurewebsites.net';
+var THREAD_SITE_URL='http://telvoy.azurewebsites.net'
 var IS_DEBUG_MODE=false;
 var MONGO_CONNECTION_STRING = "mongodb://Telvoy_MongoDb:ZFj.UBl7MvdIsyR4AVOFQVWXAhDSM078Uhc8SRs6.LA-@ds030607.mongolab.com:30607/Telvoy_MongoDb";
 
 
 
 //Imap server
+/*
 var PULL_EMAIL_ID ="confme@ext.movial.com";
 var PULL_EMAIL_PASS="aivohyiey0iePh";
 var PULL_EMAIL_SERVER="imap.gmail.com";
 var PULL_EMAIL_SERVER_PORT=993;
 var PULL_EMAIL_SERVER_SECURE=true;
+*/
 
-/*
 var PULL_EMAIL_ID ='esydomain\\telvoytest1';
 var PULL_EMAIL_PASS="Telvo123!@";
 var PULL_EMAIL_SERVER="mail.esydomain.com";
 var PULL_EMAIL_SERVER_PORT=143;
 var PULL_EMAIL_SERVER_SECURE=false;
-*/
+
 
 //console.log(PULL_EMAIL_ID);
 var EMAIL_PULL_CRITERIA='UNSEEN';
@@ -41,6 +43,7 @@ var EMAIL_ADDRESS_CONFIRMATION_BODY='To Confirm Click the link\n [LINK] \n copy 
 
 
 exports.SITE_ROOT_URL=SITE_ROOT_URL;
+exports.THREAD_SITE_URL=THREAD_SITE_URL;
 exports.IS_DEBUG_MODE=IS_DEBUG_MODE;
 exports.PULL_EMAIL_ID=PULL_EMAIL_ID;
 exports.PULL_EMAIL_PASS=PULL_EMAIL_PASS;

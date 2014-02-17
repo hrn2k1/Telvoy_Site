@@ -69,6 +69,11 @@ process.on('uncaughtException', function (err) {
 http.createServer(function(request, response) {
     var uri = url.parse(request.url).pathname;
 
+    http.get(config.THREAD_SITE_URL+'/ping',function(res){
+        utility.log("parser is running.");
+    }).on('error',function(e){
+         utility.log("parser is not running.");
+    });
     if(debug==true)
     {
         utility.log('Requested URL: '+request.url);

@@ -25,8 +25,8 @@
 		background-color: #F0F0F0;
 		}
 		a{text-decoration: none;}
-		#ajaxmessage{ position:fixed; top: 10; left: 270px; text-align:center; z-index:100; margin:0 auto; }
-.main { width:800px; margin:0px auto; }
+		#ajaxmessage{ float:left;clear:both; }
+		.main { width:800px; margin:0px auto; }
 		.messagebox {padding:2px 10px; background:#25649F; border:1px solid #CCC; z-index:5; text-align:center; box-shadow:0 1px 4px #949494; border-top: 0px; color:#FFF; }
 		table1 {
 		    text-align: left;
@@ -35,6 +35,11 @@
 		    border-collapse: separate;
 		    border-spacing: 0 2px;
 		}
+		.login_box{
+				margin: 0 auto;
+				text-align: left;
+				width: 683px;
+			}
 	</style>
 	<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 	<script type="text/javascript">
@@ -151,15 +156,15 @@
 	</script>
 </head>
 	<body >
-		<img src="/logo" style="position:fixed" />
-		<div align="center">
-			<a href="/admin" style="background-color: rgb(255, 255, 255);font-weight: bold;padding: 5px;" > Back to Telvoy Administrator</a>
-			<a href="/logout" style="background-color: rgb(255, 255, 255);font-weight: bold;padding: 5px;" > Logout</a>
-		</div>
-     <div align="center">
+		
+		
 	
-	<div id="ajaxmessage"></div>
-		<div style="background-color: rgb(255, 255, 255);margin-top: 10%;padding: 10px;width: 695px;">
+     <div class="login_box">
+	 <img src="/logo" style="width: 115px; margin: 0px 0px 13px;float:left">
+	<a href="/logout" style="background-color: rgb(255, 255, 255);font-weight: bold;padding: 5px;;float:right" > Logout</a>
+	<a href="/admin" style="background-color: rgb(255, 255, 255);font-weight: bold;padding: 5px;margin-right:5px;float:right" > Back to Telvoy Administration</a>
+		<div id="ajaxmessage"></div>	
+		<div style="background-color: #fff; padding: 10px; width: 660px; margin: 0px auto; float:left">
 			<h1 style="margin:5px">Dial In Numbers</h1>
 			<hr>
 			<form action="javascript:;" method="get" name="frm">
@@ -186,6 +191,8 @@
 			</form>
 			<div id="nos" style="width:100%"></div>
 		</div>
+		
 	</div>
+	<div align="center" style="float:left;width: 100%; bottom: 5px; position: fixed;">Copyright @ 2014 : Telvoy</div>
 	</body>
 </html> 

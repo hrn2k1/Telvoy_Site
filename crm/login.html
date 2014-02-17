@@ -25,9 +25,10 @@
 		background-color: #F0F0F0;
 		}
 		a{text-decoration: none;}
-		#ajaxmessage{ position:fixed; top: 10; left: 270px; text-align:center; z-index:100; margin:0 auto; }
-.main { width:800px; margin:0px auto; }
+		#ajaxmessage{ float:left;clear:both; }
+		.main { width:800px; margin:0px auto; }
 		.messagebox {padding:2px 10px; background:#25649F; border:1px solid #CCC; z-index:5; text-align:center; box-shadow:0 1px 4px #949494; border-top: 0px; color:#FFF; }
+		
 		table1 {
 		    text-align: left;
 		    width: 100%;
@@ -35,6 +36,11 @@
 		    border-collapse: separate;
 		    border-spacing: 0 2px;
 		}
+		.login_box{
+				margin: 0 auto;
+				text-align: left;
+				width: 413px;
+			}
 	</style>
 	<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 	<script type="text/javascript">
@@ -68,7 +74,7 @@
 					beforeSend: function( xhr ) {
 						$("#username").prop( "disabled", true );
 						$("#password").prop( "disabled", true );
-						//$(ajaxMessage).html(loadingHtml);
+						$(ajaxMessage).html(loadingHtml);
 					},
 					complete: function( xhr ) {
 						//$(ajaxMessage).html('<div class="messagebox">authentication Successfully.</div>');
@@ -80,7 +86,7 @@
 					 $("#password").val("");
 					 $("#password").prop( "disabled", false );
 					 $("#username").prop( "disabled", false );
-					 $("#msg").html(obj.Status);
+					 $(ajaxMessage).html('<div class="messagebox">'+obj.Status+'</div>');
 					 if(obj.Status=="Success")
 					 {
 					 	//alert(obj.Status);
@@ -106,39 +112,47 @@
 	</script>
 </head>
 	<body >
-	<img src="/logo" />
+	
      <div align="center">
 	
-	<div id="ajaxmessage"></div>
-		<div style="background-color: rgb(255, 255, 255);margin-top: 10%;padding: 10px;width: 525px;">
-			<h1 style="margin:5px">Login</h1>
-			<hr>
-			<form action="javascript:;" method="get" name="frm">
-				<table width="100%" cellpadding="0" cellspacing="0">
-					<tr class="row0">
-						<td style="width:130px">User Name: </td>
-						<td style="width:130px">
-							<input type="text" name="username" id="username">
-						 </td>
-						 <td> </td>
+	
+		
+		<div class="login_box">
+			<img src="/logo" style="width: 115px; margin: 0px 0px 13px;float:left">
+			<div id="ajaxmessage"></div>
+			<div style="background-color: #fff; padding: 10px; width: 390px; margin: 0px auto;float:left">
+				<h1 style="margin: 5px; text-align: center;">Login</h1>
+				<hr>
+				<form action="javascript:;" method="get" name="frm">
+					<table width="100%" cellpadding="0" cellspacing="0">
+						<tr class="row0">
+							<td style="width:130px">User Name: </td>
+							<td style="width:130px">
+								<input type="text" name="username" id="username">
+							 </td>
+							 <td> </td>
+								
+						</tr>
+						<tr class="row1">
+							<td>Password: </td>
+							<td><input type="password" name="password" id="password"></td>
+							<td></td>
+						</tr>
+						<tr class="row0">
+							<td colspan="3">
+								<input type="submit" name="login" id="login" style="width: 70px; margin: 0px 0px 0px 130px;" value="Login">
+								
+							</td>
 							
-					</tr>
-					<tr class="row1">
-						<td>Password: </td>
-						<td><input type="password" name="password" id="password"></td>
-						<td></td>
-					</tr>
-					<tr class="row0">
-						<td colspan="3">
-							<input type="submit" name="login" id="login" style="width:70px" value="Login">
-							<span id="msg"></span>
-						</td>
-						
-					</tr>
-				</table>
-			</form>
-			
-		</div>
+						</tr>
+					</table>
+				</form>
+				
+			</div>
+
+ 		</div>
+		
 	</div>
+	<div align="center" style="width: 100%; bottom: 5px; position: fixed;">Copyright @ 2014 : Telvoy</div>
 	</body>
 </html> 

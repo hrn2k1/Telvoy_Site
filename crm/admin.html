@@ -35,27 +35,31 @@
 		    border-collapse: separate;
 		    border-spacing: 0 2px;
 		}
+		.login_box{
+				margin: 0 auto;
+				text-align: left;
+				width: 413px;
+			}
 	</style>
 	<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 	
 	
 </head>
 	<body >
-		<img src="/logo" style="position:fixed" />
-		<div align="center">
-			
-			<a href="/logout" style="background-color: rgb(255, 255, 255);font-weight: bold;padding: 5px;" > Logout</a>
-		</div>
-     <div align="center">
-	
+		
+     <div  class="login_box" >
+	<img src="/logo" style="width: 115px; margin: 0px 0px 13px;float:left">
+	<a href="/logout" style="background-color: rgb(255, 255, 255);font-weight: bold;padding: 5px;;float:right" > Logout</a>
 	<div id="ajaxmessage"></div>
-		<div style="background-color: rgb(255, 255, 255);margin-top: 10%;padding: 10px;width: 525px;">
-			<h1 style="margin:5px">Telvoy Administrator</h1>
+		<div style="background-color: #fff; padding: 10px; width: 390px; margin: 0px auto;float:left">
+			<h1 style="margin:5px">Telvoy Administration</h1>
 			<hr>
-			<a href="/assignpin"> Meeting PIN Assignment</a><br>
+			<!--<a style="visibility:hidden" href="/assignpin"> Meeting PIN Assignment</a><br> -->
 			<a href="/adddialinnumbers"> Dial-in Numbers</a>
 			
 		</div>
+		
 	</div>
+	<div align="center" style="float:left;width: 100%; bottom: 5px; position: fixed;">Copyright @ 2014 : Telvoy</div>
 	</body>
 </html> 

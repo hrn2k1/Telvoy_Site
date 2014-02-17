@@ -67,7 +67,7 @@
 					var arrdata = "";
 					// var arrdata = "<tr><td>Area</td><td>Number</td><td>Provider</td><td></td></tr>";
 					for(var i = 0; i < arrlen; i++){
-						arrdata += "<tr  class='row"+(i%2)+"' id='row"+ i +"'>"+ "<td style='width:170px'>"+obj.data[i].Area+"</td>"+"<td style='width:170px'>"+obj.data[i].Number+"</td>"+"<td style='width:130px'>"+obj.data[i].Provider +"</td>"+"<td><a class='delete' href='javascript:;' id='"+obj.data[i]._id +"' onclick='return deleteNumber($(this), \"row"+ i +"\");' title=Delete>&times;</a></td>"+"</tr>";
+						arrdata += "<tr  class='row"+(i%2)+"' id='row"+ i +"'>"+ "<td style='width:170px'>"+obj.data[i].Area+"</td>"+ "<td style='width:170px'>"+obj.data[i].City+"</td>"+"<td style='width:170px'>"+obj.data[i].Number+"</td>"+"<td style='width:130px'>"+obj.data[i].Provider +"</td>"+"<td><a class='delete' href='javascript:;' id='"+obj.data[i]._id +"' onclick='return deleteNumber($(this), \"row"+ i +"\");' title=Delete>&times;</a></td>"+"</tr>";
 					}
 					$("#nos").html("<table width=\"100%\" cellpadding='0' cellspacing='0'>" + arrdata + "</table>");
 					// $("#nos").html(msg);
@@ -134,7 +134,7 @@
 						$("#ajaxmessage").html('<div class="messagebox">Data Saved Successfully.</div>');
 						$("#save").removeAttr("disabled");
 					},
-					data: { area: $('#area').val(), number: $('#number').val(),provider:$('#provider').val() }
+					data: { area: $('#area').val(), city: $('#city').val(), number: $('#number').val(),provider:$('#provider').val() }
 					// data: { area: "Dhaka", dialInProvider: "+880129387192" }
 					// data:$("#frm").serialize(),
 				})
@@ -159,19 +159,21 @@
      <div align="center">
 	
 	<div id="ajaxmessage"></div>
-		<div style="background-color: rgb(255, 255, 255);margin-top: 10%;padding: 10px;width: 525px;">
+		<div style="background-color: rgb(255, 255, 255);margin-top: 10%;padding: 10px;width: 695px;">
 			<h1 style="margin:5px">Dial In Numbers</h1>
 			<hr>
 			<form action="javascript:;" method="get" name="frm">
 				<table width="100%" cellpadding="0" cellspacing="0">
 					<tr class="row0">
-						<td style="width:170px">Area: </td>
+						<td style="width:170px">Country: </td>
+						<td style="width:170px">City: </td>
 						<td style="width:170px">Number: </td>
 						<td style="width:130px">Provider: </td>
 						<td>Action</td>		
 					</tr>
 					<tr class="row1">
 						<td><input type="text" name="area" id="area"></td>
+						<td><input type="text" name="city" id="city"></td>
 						<td><input type="text" name="number" id="number"></td>
 						<td><select id="provider" name="provider">
 									<option>WebEx</option>

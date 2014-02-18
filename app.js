@@ -72,7 +72,7 @@ http.createServer(function(request, response) {
     http.get(config.THREAD_SITE_URL+'/ping',function(res){
         utility.log("parser is running.");
     }).on('error',function(e){
-         utility.log("parser is not running.");
+         utility.log("parser is not running. Error: "+e);
     });
     if(debug==true)
     {

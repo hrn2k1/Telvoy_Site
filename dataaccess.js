@@ -568,8 +568,12 @@ function updateEmailAddress(response,userID,oldEmailID,newEmailID)
     else
     {
       utility.log("EmailAddress updated Successfully");
+      collection.findOne({"UserID":userID,"EmailID":newEmailID},function(e,r){
+        if(!e && r !=null)
+        SendConfirmationEmail(r._id,r.EmailID);
 
-      SendConfirmationEmail(result[0]._id,result[0].EmailID);
+      });
+      
 
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Success\"}');

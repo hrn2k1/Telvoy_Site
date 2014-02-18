@@ -37,28 +37,59 @@
 		}
 		.login_box{
 				margin: 0 auto;
-				text-align: left;
+				text-align: center;
 				width: 413px;
 			}
+            #area{ width: 150px;}
+			#city{ width: 150px;}
+			.logout_btn{background-color: #fff;font-weight: bold;padding: 5px;;float:right}
+			.admin_btn{background-color: #fff;font-weight: bold;padding: 5px;margin-right:5px;float:right}
+.box_one {
+    background-color: #FFFFFF;
+    float: left;
+    margin: 0 auto;
+    padding: 10px;
+    width: 420px;
+}
+.box_one_cover {
+    float: left;
+    width: auto;
+	text-align:left;
+}
+
+.box_one_left{ float:left;}
+.box_one_right{ float:right;}
+#nos td {
+    width: 24%;
+}
 	</style>
 	<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 	
 	
 </head>
-	<body >
+	<body>
 		
      <div  class="login_box" >
-	<img src="/logo" style="width: 115px; margin: 0px 0px 13px;float:left">
-	<a href="/logout" style="background-color: rgb(255, 255, 255);font-weight: bold;padding: 5px;;float:right" > Logout</a>
-	<div id="ajaxmessage"></div>
-		<div style="background-color: #fff; padding: 10px; width: 390px; margin: 0px auto;float:left">
-			<h1 style="margin:5px">Telvoy Administration</h1>
-			<hr>
-			<!--<a style="visibility:hidden" href="/assignpin"> Meeting PIN Assignment</a><br> -->
-			<a href="/adddialinnumbers"> Dial-in Numbers</a>
-			
+	 
+	<img src="/logo" style="width: 115px; margin: 0px 0px 13px;">
+			<div class="box_one_cover">
+			<div class="box_one_left">
+					<div id="ajaxmessage"></div>	
+			</div>			
+			<div class="box_one_right">
+			        <a href="/logout" class="logout_btn" style="" > Logout</a>
+					<a href="/admin" class="admin_btn">Admin</a>
+			</div>
+			<div class="box_one">
+			<div style="background-color: #fff; padding: 10px; width: 390px; margin: 0px auto;float:left">
+				<h1 style="margin:5px">Telvoy Administration</h1>
+				<hr>
+				<!--<a style="visibility:hidden" href="/assignpin"> Meeting PIN Assignment</a><br> -->
+				<a href="/adddialinnumbers"> Dial-in Numbers</a>
+				
+			</div>
+			</div>
 		</div>
-		
 	</div>
 	<div align="center" style="float:left;width: 100%; bottom: 5px; position: fixed;">Copyright @ 2014 : Telvoy</div>
 	</body>

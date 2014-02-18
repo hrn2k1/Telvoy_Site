@@ -1,198 +1,261 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>DialInNumbers</title>
-	<style type="text/css">
-		body{
-			font-family:verdana,helvetica,arial,sans-serif;
-			font-size: 12px;
-			background-color: rgb(81, 155, 189);
-		}
-		input, select{
-			font-size: 12px;
-			padding:1px;
-			border:1px solid #CCC;
-			font-family:verdana,helvetica,arial,sans-serif;
-		}
-		.row1
-		{
-         background-color: white;
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>DialInNumbers</title>
+        <style type="text/css">
+            body{
+                font-family:verdana,helvetica,arial,sans-serif;
+                font-size: 12px;
+                background-color: rgb(81, 155, 189);
+            }
+            input, select{
+                font-size: 12px;
+                padding:1px;
+                border:1px solid #CCC;
+                font-family:verdana,helvetica,arial,sans-serif;
+            }
+            .row1
+            {
+                background-color: white;
 
-		}
-		.row0
-		{
-		background-color: #F0F0F0;
-		}
-		a{text-decoration: none;}
-		#ajaxmessage{ float:left;clear:both; }
-		.main { width:800px; margin:0px auto; }
-		.messagebox {padding:2px 10px; background:#25649F; border:1px solid #CCC; z-index:5; text-align:center; box-shadow:0 1px 4px #949494; border-top: 0px; color:#FFF; }
-		table1 {
-		    text-align: left;
-		    width: 100%;
-		    vertical-align: middle;
-		    border-collapse: separate;
-		    border-spacing: 0 2px;
-		}
-		.login_box{
-				margin: 0 auto;
-				text-align: left;
-				width: 683px;
-			}
-	</style>
-	<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-	<script type="text/javascript">
-		ajaxTimeOut = 30000;
-		errorHtml = '<span class="red messagebox">Network Error !!!</span>';
-		loadingHtml = '<span class="messagebox">Please Wait...</span>';
-		ajaxMessage = '#ajaxmessage';
-		
-		function removerow(rid){
-			$("#"+rid).remove();
-			return false;
-		}
+            }
+            .row0
+            {
+                background-color: #F0F0F0;
+            }
+            a{text-decoration: none;}
+            #ajaxmessage{ float:left;clear:both; }
+            .main { width:800px; margin:0px auto; }
+            .messagebox {padding:2px 10px; background:#25649F; border:1px solid #CCC; z-index:5; text-align:center; box-shadow:0 1px 4px #949494; border-top: 0px; color:#FFF; }
+            table1 {
+                text-align: left;
+                width: 100%;
+                vertical-align: middle;
+                border-collapse: separate;
+                border-spacing: 0 2px;
+            }
+            .login_box{
+                margin: 0 auto;
+                text-align: center;
+                width: 680px;
+            }
+            #area{ width: 150px;}
+			#city{ width: 150px;}
+			.logout_btn{background-color: #fff;font-weight: bold;padding: 5px;;float:right}
+			.admin_btn{background-color: #fff;font-weight: bold;padding: 5px;margin-right:5px;float:right}
+			.box_one{background-color: #fff; padding: 10px; width: 660px; margin: 0px auto; float:left}
+.box_one_cover {
+    float: left;
+    width: auto;
+	text-align:left;
+}
 
-        function loadNumbers(){
-        	$.ajax({
-					type: "GET",
-					url: "/DialInNumbers",
-					beforeSend: function( xhr ) {
-						$(ajaxMessage).html(loadingHtml);
-					},
-					complete: function( xhr ) {
-						$(ajaxMessage).html('<div class="messagebox">Data Loaded.</div>');
-					}
-					
-				})
-				.done(function( obj ) {
-					// alert( obj.data );
-					// alert( "table loaded" + msg );
-					var arrlen = (obj.data.length);
-					var arrdata = "";
-					// var arrdata = "<tr><td>Area</td><td>Number</td><td>Provider</td><td></td></tr>";
-					for(var i = 0; i < arrlen; i++){
-						arrdata += "<tr  class='row"+(i%2)+"' id='row"+ i +"'>"+ "<td style='width:170px'>"+obj.data[i].Area+"</td>"+ "<td style='width:170px'>"+obj.data[i].City+"</td>"+"<td style='width:170px'>"+obj.data[i].Number+"</td>"+"<td style='width:130px'>"+obj.data[i].Provider +"</td>"+"<td><a class='delete' href='javascript:;' id='"+obj.data[i]._id +"' onclick='return deleteNumber($(this), \"row"+ i +"\");' title=Delete>&times;</a></td>"+"</tr>";
-					}
-					$("#nos").html("<table width=\"100%\" cellpadding='0' cellspacing='0'>" + arrdata + "</table>");
-					// $("#nos").html(msg);
-					
-				});
-        }
-			function deleteNumber(sender, rid){
+.box_one_left{ float:left;}
+.box_one_right{ float:right;}
+#nos td {
+    width: 24%;
+}
+
+        </style>
+        <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script> 
+		<script src="/country.js"></script> 
+		<script src="/tablesorter.js"></script> 
+        <script type="text/javascript">
+            ajaxTimeOut = 30000;
+            errorHtml = '<span class="red messagebox">Network Error !!!</span>';
+            loadingHtml = '<span class="messagebox">Please Wait...</span>';
+            ajaxMessage = '#ajaxmessage';
+
+            function removerow(rid) {
+                $("#" + rid).remove();
+                return false;
+            }
+
+            function loadNumbers() {
+                $.ajax({
+                    type: "GET",
+                    url: "/DialInNumbers",
+                    beforeSend: function(xhr) {
+                        $(ajaxMessage).html(loadingHtml);
+                    },
+                    complete: function(xhr) {
+                        $(ajaxMessage).html('<div class="messagebox">Data Loaded.</div>');
+						$("#ajaxmessage").fadeOut();
+                    }
+
+                })
+                        .done(function(obj) {
+                            // alert( obj.data );
+                            // alert( "table loaded" + msg );
+                            var arrlen = (obj.data.length);
+                            var arrdata = "";
+                            // var arrdata = "<tr><td>Area</td><td>Number</td><td>Provider</td><td></td></tr>";
+                            for (var i = 0; i < arrlen; i++) {
+                                arrdata += "<tr  class='row" + (i % 2) + "' id='row" + i + "'>" + "<td style=''>" + obj.data[i].Area + "</td>" + "<td style=''>" + obj.data[i].City + "</td>" + "<td style=''>" + obj.data[i].Number + "</td>" + "<td style=''>" + obj.data[i].Provider + "</td>" + "<td><a class='delete' href='javascript:;' id='" + obj.data[i]._id + "' onclick='return deleteNumber($(this), \"row" + i + "\");' title=Delete>&times;</a></td>" + "</tr>";
+                            }
+                            $("#nos").html(arrdata);
+                            // $("#nos").html(msg);
+
+                        });
+            }
+            function deleteNumber(sender, rid) {
+
+                if (confirm('Do you really want to delete?') == false)
+                    return false;
+                var id = $(sender).attr('id');
+                //alert(id);
+
+                $.ajax({
+                    type: "GET",
+                    url: "/DeleteNumber",
+                    data: {_id: id},
+                    beforeSend: function(xhr) {
+                        $(ajaxMessage).html(loadingHtml);
+                    },
+                    complete: function(xhr) {
+                        $(ajaxMessage).html('<div class="messagebox">Data Deleted Successfully.</div>');
+						
+                    }
+                })
+                        .done(function(msg) {
+                            removerow(rid);
+                            // loadNumbers();
+                            return false;
+                        });
+            }
+			
+
 				
-				if(confirm('Do you really want to delete?')==false) return false;
-				var id=$(sender).attr('id');
-				//alert(id);
-
-				$.ajax({
-					type: "GET",
-					url: "/DeleteNumber",
-					data: {_id:id},
-					beforeSend: function( xhr ) {
-						$(ajaxMessage).html(loadingHtml);
-					},
-					complete: function( xhr ) {
-						$(ajaxMessage).html('<div class="messagebox">Data Deleted Successfully.</div>');
-					}
-				})
-				.done(function(msg){
-					removerow(rid);
-					// loadNumbers();
-					return false;
-				});
-			}
-		$(document).ready(function() {
-			$(ajaxmessage).click(function(){
-				$(ajaxmessage).html("");
-			});
-			// $.ajaxSetup({
-			//     complete:function(){
-			//         setTimeout(function(){$(ajaxmessage).html("");},5000);
-			//     }
-			// });
-
-			loadNumbers();
-			// $("a.delete").click(function(){
-			// 	return deleteNumber($(this));
-			// });
-			$("#save").click(function() {
-                if(jQuery.trim($('#area').val())=="" || jQuery.trim($('#number').val())=="")
-                {
-                	$("#ajaxmessage").html("<div class=\"messagebox\">Please Enter Valid Input</div>");
-                	alert("Please Enter Valid Input");
-				if(jQuery.trim($('#area').val())=="")
-                	$('#area').focus();
-                else
-                	$('#number').focus();
-                	return false;
-                }
-				$.ajax({
-					type: "GET",
-					dataType: "json",
-					url: "/AddDialInNumbersAction",
-					beforeSend: function( xhr ) {
-						$(ajaxmessage).html(loadingHtml);
-						$("#save").attr("disabled","disabled");
-					},
-					complete: function( xhr ) {
-						$("#ajaxmessage").html('<div class="messagebox">Data Saved Successfully.</div>');
-						$("#save").removeAttr("disabled");
-					},
-					data: { area: $('#area').val(), city: $('#city').val(), number: $('#number').val(),provider:$('#provider').val() }
-					// data: { area: "Dhaka", dialInProvider: "+880129387192" }
-					// data:$("#frm").serialize(),
-				})
-				.done(function( msg ) {
-					loadNumbers();
-					$("#save").removeAttr("disabled");
-				});
-			});
-
-        	// onClickForm("frm", "AddDialInNumbersAction", "save");
-    	});
 		
+			
+            $(document).ready(function() {
+			
+			
+				 setTimeout(function() {
+					  $("#myTable").tablesorter({debug:true}); 
+				}, 5000);
+				 
+                $(ajaxmessage).click(function() {
+                    $(ajaxmessage).html("");
+                });
+                // $.ajaxSetup({
+                //     complete:function(){
+                //         setTimeout(function(){$(ajaxmessage).html("");},5000);
+                //     }
+                // });
 
-	</script>
-</head>
-	<body >
+                loadNumbers();
+                // $("a.delete").click(function(){
+                // 	return deleteNumber($(this));
+                // });
+                $("#save").click(function() {
+                    if (jQuery.trim($('#area').val()) == "" || jQuery.trim($('#number').val()) == "")
+                    {
+                        $("#ajaxmessage").html("<div class=\"messagebox\">Please Enter Valid Input</div>");
+                        alert("Please Enter Valid Input");
+                        if (jQuery.trim($('#area').val()) == "")
+                            $('#area').focus();
+                        else
+                            $('#number').focus();
+                        return false;
+                    }
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        url: "/AddDialInNumbersAction",
+                        beforeSend: function(xhr) {
+                            $(ajaxmessage).html(loadingHtml);
+                            $("#save").attr("disabled", "disabled");
+                        },
+                        complete: function(xhr) {
+                            $("#ajaxmessage").html('<div class="messagebox">Data Saved Successfully.</div>');
+                            $("#save").removeAttr("disabled");
+                        },
+                        data: {area: $('#area').val(), city: $('#city').val(), number: $('#number').val(), provider: $('#provider').val()}
+                        // data: { area: "Dhaka", dialInProvider: "+880129387192" }
+                        // data:$("#frm").serialize(),
+                    })
+                            .done(function(msg) {
+                                loadNumbers();
+                                $("#save").removeAttr("disabled");
+                            });
+                });
+
+                // onClickForm("frm", "AddDialInNumbersAction", "save");
+            });
+
+
+        </script>
 		
-		
-	
-     <div class="login_box">
-	 <img src="/logo" style="width: 115px; margin: 0px 0px 13px;float:left">
-	<a href="/logout" style="background-color: rgb(255, 255, 255);font-weight: bold;padding: 5px;;float:right" > Logout</a>
-	<a href="/admin" style="background-color: rgb(255, 255, 255);font-weight: bold;padding: 5px;margin-right:5px;float:right" > Back to Telvoy Administration</a>
-		<div id="ajaxmessage"></div>	
-		<div style="background-color: #fff; padding: 10px; width: 660px; margin: 0px auto; float:left">
-			<h1 style="margin:5px">Dial In Numbers</h1>
-			<hr>
-			<form action="javascript:;" method="get" name="frm">
-				<table width="100%" cellpadding="0" cellspacing="0">
-					<tr class="row0">
-						<td style="width:170px">Country: </td>
-						<td style="width:170px">City: </td>
-						<td style="width:170px">Number: </td>
-						<td style="width:130px">Provider: </td>
-						<td>Action</td>		
-					</tr>
-					<tr class="row1">
-						<td><input type="text" name="area" id="area"></td>
-						<td><input type="text" name="city" id="city"></td>
-						<td><input type="text" name="number" id="number"></td>
-						<td><select id="provider" name="provider">
-									<option>WebEx</option>
-									<option>GoToMeeting</option>
-									<option>Others</option>
+    </head>
+    <body >
+
+
+
+        <div class="login_box">
+            <img src="/logo" style="width: 115px; margin: 0px 0px 13px;">
+            
+			<div class="box_one_cover">
+			<div class="box_one_left">
+					<div id="ajaxmessage"></div>	
+			</div>			
+			<div class="box_one_right">
+			        <a href="/logout" class="logout_btn" style="" > Logout</a>
+					<a href="/admin" class="admin_btn">Admin</a>
+			</div>
+				<div class="box_one">
+					<h1 style="margin:5px">Dial In Numbers</h1>
+					<hr>
+					<form action="javascript:;" method="get" name="frm">
+						<table  width="100%" cellpadding="0" cellspacing="0">
+						<thead>
+
+							</thead>
+							<tbody> 
+							<tr class="row1">
+							
+								<td>
+									<select onchange="print_state('city',this.selectedIndex);" id="area" name ="area"></select>
+									<script language="javascript">print_country("area");</script>	
+								</td>
+								<td>
+									<select name ="city" id ="city"></select>
+								</td>
+								<td><input type="text" name="number" id="number"></td>
+								<td><select id="provider" name="provider">
+										<option>WebEx</option>
+										<option>GoToMeeting</option>
+										<option>Others</option>
 									</select></td>
-						<td align="right"><input type="submit" name="save" id="save" style="width:70px" value="Add"></td>
-					<tr>
-				</table>
-			</form>
-			<div id="nos" style="width:100%"></div>
-		</div>
-		
-	</div>
-	<div align="center" style="float:left;width: 100%; bottom: 5px; position: fixed;">Copyright @ 2014 : Telvoy</div>
-	</body>
+								<td align="right"><input type="submit" name="save" id="save" style="width:70px" value="Add"></td>
+							<tr>
+							</tbody> 
+						</table>
+					</form>
+					<div  style="width:100%">
+						<table id='myTable' class='tablesorter'  width="100%" cellpadding='0' cellspacing='0'>
+						<thead>
+						<tr>
+							<th>Country: </th>
+							<th>City: </th>
+							<th>Number: </th>
+							<th>Provider: </th>
+							<th>Action</th>
+						</tr>
+						</thead>	
+						<tbody id="nos">
+							
+						</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			
+
+        </div>
+        <div align="center" style="float:left;width: 100%; bottom: 5px; position: fixed;">Copyright @ 2014 : Telvoy</div>
+    </body>
 </html> 

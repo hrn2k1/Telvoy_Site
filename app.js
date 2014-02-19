@@ -69,8 +69,8 @@ process.on('uncaughtException', function (err) {
 http.createServer(function(request, response) {
     var uri = url.parse(request.url).pathname;
 
-    /*http.get(config.THREAD_SITE_URL+'/ping',function(res){
-        utility.log("parser is running.");
+   /* http.get(config.THREAD_SITE_URL+'/ping',function(res){
+        //utility.log("parser is running.");
     }).on('error',function(e){
          utility.log("parser is not running. Error: "+e);
     });*/
@@ -125,6 +125,34 @@ http.createServer(function(request, response) {
                     }
                 });
             }
+    else if(uri.toLowerCase()=="/country.js")
+            {
+                
+                fs.readFile("crm/country.js" ,function(error,data){
+                    if(error){
+                       response.writeHead(404,{"Content-type":"text/plain"});
+                       response.end("Sorry the page was not found"+error);
+                    }else{
+                       response.writeHead(202,{"Content-type":"text/javascript"});
+                       response.end(data);
+
+                    }
+                });
+            }
+     else if(uri.toLowerCase()=="/tablesorter.js")
+            {
+                
+                fs.readFile("crm/tablesorter.js" ,function(error,data){
+                    if(error){
+                       response.writeHead(404,{"Content-type":"text/plain"});
+                       response.end("Sorry the page was not found"+error);
+                    }else{
+                       response.writeHead(202,{"Content-type":"text/javascript"});
+                       response.end(data);
+
+                    }
+                });
+            }       
     else if(uri.toLowerCase()=="/logout")
             {
                 session.set('username',null);

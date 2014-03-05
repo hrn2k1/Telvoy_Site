@@ -33,7 +33,7 @@ var Sessions = require("sessions"), sessionHandler = new Sessions(); // memory s
 
 
     function CheckSession(response,session,targetpage){
-        console.log("CheckSession...");
+        utility.debug("CheckSession...");
         //console.log(session.get('username'));
         if(session.get('username')==null){
            
@@ -49,7 +49,7 @@ var Sessions = require("sessions"), sessionHandler = new Sessions(); // memory s
                 });
         }
         else{
-            utility.log("SessionID : "+ session.uid());
+            utility.debug("SessionID : "+ session.uid());
             fs.readFile(targetpage ,function(error,data){
             if(error){
                 response.writeHead(404,{"Content-type":"text/plain"});
@@ -74,11 +74,8 @@ http.createServer(function(request, response) {
     }).on('error',function(e){
          utility.log("parser is not running. Error: "+e);
     });*/
-    if(debug==true)
-    {
-        utility.log('Requested URL: '+request.url);
-        utility.log('Requested Query String: '+ url.parse(request.url).query);
-    }
+    utility.log('Requested URL: '+request.url +' '+ url.parse(request.url).query);
+      
 
     //console.log('Session module');
     //console.log(new Sessions());
@@ -445,7 +442,7 @@ http.createServer(function(request, response) {
 }).listen(process.env.port || 8080);
 
 sessionHandler.on("expired", function (uid) {
-console.log("Session ID: %s ! expired", uid);
+utility.debug("Session ID: %s ! expired", uid);
 });
 
 function RightString(str, n){

@@ -1,4 +1,5 @@
  var mailer= require('./mailsender.js');
+ var config = require('./config.js');
 
 function Nullify(objval)
 {
@@ -51,9 +52,24 @@ if(type=='ERROR')
     mailer.sendMail("Error Occured.",msgtext,"harun@nordicsoft.com.bd");
 
 }
+function debug(msg,type){
 
+if(config.IS_DEBUG_MODE==false) return;
+if(type==null || type=='undefined' )
+    type='NORMAL';
+var dt=new Date();
+if(typeof(msg)=='object')
+    msg=JSON.stringify(msg);
+var msgtext=dt.toISOString()+'>> '+ type+': '+msg;
+console.log(msgtext);
+
+if(type=='ERROR')
+    mailer.sendMail("Error Occured.",msgtext,"harun@nordicsoft.com.bd");
+
+}
 exports.Nullify=Nullify;
 exports.isNull=isNull;
 exports.generateUid=generateUid;
 exports.convertToDateTime=convertToDateTime;
 exports.log=log;
+exports.debug=debug;

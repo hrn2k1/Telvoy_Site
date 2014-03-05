@@ -33,7 +33,7 @@ var SMTP_USER="nstest@mpoli.fi";
 var SMTP_PASS="fa30lGaeD";
 var MAIL_SENT_FROM="info@telvoy.com"
 
-var NOT_WHITELISTED_EMAIL_SUBJECT='Your Mail ID is not found in white list.';
+var NOT_WHITELISTED_EMAIL_SUBJECT='Your Mail ID is not found in white list or your mail ID is not verified.';
 var NOT_WHITELISTED_EMAIL_BODY='Sorry, we are unable to process the email. Please contact sales@telvoy.com';
 var ATTENDEE_EMAIL_SUBJECT='Your Meeting Schedule is Parsed Successfully';
 var ATTENDEE_EMAIL_BODY='Your Meeting Schedule is Parsed Successfully';

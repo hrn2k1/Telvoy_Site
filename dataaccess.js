@@ -302,8 +302,8 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
   };
 
 
-  utility.log('User object to add');
-  utility.log(insert_entity);
+  utility.debug('User object to add');
+  utility.debug(insert_entity);
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
   var collection = connection.collection('Users');
   collection.findOne({"UserID":userID}, function(error, result) {
@@ -395,7 +395,7 @@ var entity = {
     }
     else
     {
-      utility.log("Email(s) inserted Successfully");
+      utility.debug("Email(s) inserted Successfully");
 
       //connection.close();
       return;
@@ -432,7 +432,7 @@ function VerifiedEmailAddress(response,id,email){
     }
     else
     {
-      console.log(result);
+      utility.debug(result);
       if(result>0)
       {
       utility.log("VerifiedEmailAddress updated Successfully to true");
@@ -604,7 +604,7 @@ function getEmailAddresses(response,userID)
     }
     else
     {
-      utility.log(result);
+      utility.debug(result);
       response.setHeader("content-type", "text/plain");
       response.write("{\"Emails\":" + JSON.stringify(result) + "}");
       response.end();
@@ -831,7 +831,7 @@ function getDialInNumbers(response)
           // response.write(tb);
           // response.end();
 
-          utility.log(result);
+          utility.debug(result);
           response.setHeader("content-type", "application/json");
           response.write("{\"data\":" + JSON.stringify(result) + "}");
           response.end();
@@ -907,7 +907,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
     }
     else
     {
-      utility.log(result);
+      utility.debug(result);
       response.setHeader("content-type", "text/plain");
       response.write(JSON.stringify(result));
       response.end();
@@ -917,7 +917,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
 });
 }
 function deductCreditBalance(response,userID){
-    utility.log('Deduct credit balance for '+userID);
+    utility.debug('Deduct credit balance for '+userID);
 
    
  
@@ -935,8 +935,8 @@ function deductCreditBalance(response,userID){
     else
     {
     if( data !=null){
-       utility.log("Previous Balance");
-       console.log(data);
+       utility.debug("Previous Balance");
+       utility.debug(data);
       var entity = {
       "Credit": data.Credit-1
       };
@@ -1134,10 +1134,10 @@ function getInvitations(response,userID,id){
 function InsertMeetingInvitees (EmailAddresses,Invitees,invID,addresses,i,callback) {
 if(i<addresses.length){
   
-   EmailAddresses.findOne({EmailID: addresses[i].address}, function(error, result1){
+   EmailAddresses.findOne({EmailID: addresses[i].address,Verified:true}, function(error, result1){
                 if(!error){
                   if(result1==null){
-                    utility.log(addresses[i].address+' not found in white list');
+                    utility.log(addresses[i].address+' not found in white list or not Verified.');
                       //send email
                      
                     mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,addresses[i].address);
@@ -1150,8 +1150,8 @@ if(i<addresses.length){
                     "EmailID": result1.EmailID,
                     "Invitations_id": invID
                   };
-                   console.log('invitee object to insert');
-                   console.log(entity);
+                   utility.debug('invitee object to insert');
+                   utility.debug(entity);
                   Invitees.insert(entity,function(e,r){
                     if(e){
                        utility.log("insert Invitee error: " + e, 'ERROR');
@@ -1160,7 +1160,7 @@ if(i<addresses.length){
                     else
                     {
                      mailer.sendMail(config.ATTENDEE_EMAIL_SUBJECT,config.ATTENDEE_EMAIL_BODY,result1.EmailID);
-                     utility.log('Parsed Success email sent to '+result1.EmailID);
+                     utility.log('Parsed Success email sent to '+result1.EmailID+ ' ('+result1.UserID+')');
                      //connection.close();
                      InsertMeetingInvitees(EmailAddresses,Invitees,invID,addresses,i+1,callback);
                    }
@@ -1186,8 +1186,9 @@ function InsertMeetingTolls(localtolls){
   if(localtolls=='undefined') return;
   if(localtolls==null) return;
   if(localtolls.length==0) return;
-  utility.log("Meeting Tolls to insert");
-  console.log(localtolls);
+
+  utility.debug("Meeting Tolls to insert");
+  utility.debug(localtolls);
    mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
       var Tolls = connection.collection('MeetingTolls');
       Tolls.insert(localtolls,function(err,rslt){
@@ -1218,14 +1219,14 @@ function insertInvitationEntity(entity,addresses,localtolls)
   var Invitees = connection.collection('Invitees');
   var EmailAddresses = connection.collection('EmailAddresses');
 
- EmailAddresses.findOne({"EmailID":entity.FromEmail},function(senderError,sender){
+ EmailAddresses.findOne({"EmailID":entity.FromEmail,"Verified":true},function(senderError,sender){
  if(senderError){
-  utility.log('Error in finding sender email in whitelist','ERROR');
+  utility.log('Error in finding sender email in whitelist or not Verified','ERROR');
   return;
  }
  else{
   if(sender==null){
-    utility.log('Sender Email address '+ entity.FromEmail +' is not found in whitelist.');
+    utility.log('Sender Email address '+ entity.FromEmail +' is not found in whitelist or not Verified.');
      mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,entity.FromEmail);
     return;
   }
@@ -1248,8 +1249,8 @@ function insertInvitationEntity(entity,addresses,localtolls)
           }
           else
           {
-            utility.log('insert invitation result.........');
-            console.log(result);
+            utility.debug('insert invitation result.........');
+            utility.debug(result);
             utility.log("Invitation inserted Successfully");
             InsertMeetingInvitees(EmailAddresses,Invitees,result[0]._id,addresses,0,function(){ InsertMeetingTolls(localtolls);});
             //connection.close();  
@@ -1267,8 +1268,8 @@ function insertInvitationEntity(entity,addresses,localtolls)
           }
           else
           {
-            utility.log('update invitation result.........');
-            console.log(result);
+            utility.debug('update invitation result.........');
+            utility.debug(result);
             utility.log("Invitation updated Successfully");
             Invitees.remove({Invitations_id:result_invite._id},function(err,res){
               if(err){
@@ -1276,7 +1277,7 @@ function insertInvitationEntity(entity,addresses,localtolls)
               connection.close();
               }
               else{
-                utility.log('deleted all previous invitees.')
+                utility.debug('deleted all previous invitees.')
                  InsertMeetingInvitees(EmailAddresses,Invitees,result_invite._id,addresses,0,function(){ InsertMeetingTolls(localtolls);});
               }
             });

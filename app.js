@@ -176,6 +176,7 @@ http.createServer(function(request, response) {
          
     }
     else if (uri.toLowerCase() === "/conf") {
+        console.log('I am in /conf');
         var query = url.parse(request.url).query;
         var params=querystring.parse(query);
           dao.getInvitations(response,utility.Nullify(params['userID']),utility.Nullify(params['id']));

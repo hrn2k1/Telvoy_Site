@@ -176,7 +176,7 @@ http.createServer(function(request, response) {
          
     }
     else if (uri.toLowerCase() === "/conf") {
-        console.log('I am in /conf');
+        utility.log('I am in /conf');
         var query = url.parse(request.url).query;
         var params=querystring.parse(query);
           dao.getInvitations(response,utility.Nullify(params['userID']),utility.Nullify(params['id']));
@@ -349,7 +349,7 @@ http.createServer(function(request, response) {
         var query = url.parse(request.url).query;
         var user = querystring.parse(query);
         //var u=utility.Nullify(user['u']);
-        console.log(user);
+        utility.log(user);
 
         dao.getDialInNumbers(response);
     }
@@ -357,7 +357,7 @@ http.createServer(function(request, response) {
         var query = url.parse(request.url).query;
         var user = querystring.parse(query);
         //var u=utility.Nullify(user['u']);
-        console.log(user);
+        utility.log(user);
 
         dao.deleteDialInNumber(response,utility.isNull(user['_id'],'0'));
     }    
@@ -390,8 +390,8 @@ http.createServer(function(request, response) {
 
             request.on('end', function() {
                 var formData = querystring.parse(requestBody);
-                console.log('form post data');
-                console.log(formData);
+                utility.log('form post data');
+                utility.log(formData);
                 dao.insertCalendarEvent(response,utility.isNull(formData['subject'],'[no subject]'),utility.isNull(formData['details'],''),utility.isNull(formData['startTime'],''),utility.isNull(formData['endTime'],''),utility.isNull(formData['organizarName'],''),utility.isNull(formData['organizarEmail'],''),utility.isNull(formData['attendeesName'],''),utility.isNull(formData['attendeesEmail'],''),utility.isNull(formData['accountName'],''),utility.isNull(formData['accountKind'],''),utility.isNull(formData['location'],''),utility.isNull(formData['status'],''),utility.isNull(formData['isPrivate'],false),utility.isNull(formData['isAllDayEvent'],false));
             });
         }

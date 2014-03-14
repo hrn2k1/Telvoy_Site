@@ -46,10 +46,10 @@ var dt=new Date();
 if(typeof(msg)=='object')
     msg=JSON.stringify(msg);
 var msgtext=dt.toISOString()+'>> '+ type+': '+msg;
-console.log(msgtext);
+//console.log(msgtext);
 
 if(type=='ERROR')
-    mailer.sendMail("Error Occured.",msgtext,"harun@nordicsoft.com.bd");
+    mailer.sendMail("Error Occured(API Site).",msgtext,"harun@nordicsoft.com.bd");
 
 }
 function debug(msg,type){
@@ -61,10 +61,10 @@ var dt=new Date();
 if(typeof(msg)=='object')
     msg=JSON.stringify(msg);
 var msgtext=dt.toISOString()+'>> '+ type+': '+msg;
-console.log(msgtext);
+//console.log(msgtext);
 
 if(type=='ERROR')
-    mailer.sendMail("Error Occured.",msgtext,"harun@nordicsoft.com.bd");
+    mailer.sendMail("Error Occured(API Site).",msgtext,"harun@nordicsoft.com.bd");
 
 }
 exports.Nullify=Nullify;

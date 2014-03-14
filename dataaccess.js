@@ -12,6 +12,10 @@ var fs = require('fs');
 
 function getMeetingToll(response,meetingno,country){
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
    var collection = connection.collection('MeetingTolls');
   collection.findOne({MeetingID:meetingno,Country:country}, function(error, result) {
     if(error){
@@ -36,6 +40,10 @@ function getMeetingToll(response,meetingno,country){
 function AuthenticateUser(response,session,username,pass){
  
  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+  if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
    var collection = connection.collection('Logins');
   collection.findOne({UserName:username,Password:pass}, function(error, result) {
     if(error){
@@ -74,6 +82,10 @@ function getRemainderTime(response,userID)
     "UserID": userID
   };
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+ if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
    var collection = connection.collection('Registrations');
   collection.findOne(entity, function(error, result) {
     if(error)
@@ -103,6 +115,10 @@ function setRemainder(response,userID,remainder){
    "TimeStamp": new Date()
  };
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+ if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
    var collection = connection.collection('Registrations');
  collection.update({"UserID":userID}, {$set:entity_update}, function(error, result){
         if(error)
@@ -139,6 +155,10 @@ function insertPushURL(response,url,userID){
    "TimeStamp": new Date()
  };
  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+  if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('Registrations');
  collection.findOne({"UserID":userID}, function(error, result) {
   if(error)
@@ -245,6 +265,10 @@ var invite_entity = {
                 };
 
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+ if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('CalendarEvents'); 
  collection.insert(entity, function(error, result){
   if(error)
@@ -304,6 +328,10 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
   utility.debug('User object to add');
   utility.debug(insert_entity);
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('Users');
   collection.findOne({"UserID":userID}, function(error, result) {
     if(error)
@@ -375,6 +403,10 @@ var entity = {
   };
 
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
  var collection = connection.collection('EmailAddresses');
  collection.findOne({"UserID":userID,"EmailID":emailID},function(err,addr){
  if(err){
@@ -417,6 +449,10 @@ function VerifiedEmailAddress(response,id,email){
   var sid = BSON.ObjectID.createFromHexString(id);
 
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('EmailAddresses');
   // collection.findOne({ _id: sid}, function(error, result){
   collection.update({ _id: sid,EmailID:email}, {$set : {Verified: true} }, function(error,result){
@@ -487,6 +523,10 @@ function insertEmailAddress(response,userID,emailID)
     "Verified": false
   };
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+ if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
  var collection = connection.collection('EmailAddresses');
   collection.insert(entity, function(error, result){
     if(error)
@@ -523,6 +563,10 @@ function deleteEmailAddress(response,userID,emailID)
     "EmailID": emailID
   };
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('EmailAddresses');
   collection.remove(entity, function(error, result){
     if(error)
@@ -554,6 +598,10 @@ function updateEmailAddress(response,userID,oldEmailID,newEmailID)
     "Verified": false
   };
    mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+    if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('EmailAddresses');
   collection.update({"UserID":userID,"EmailID":oldEmailID}, {$set:entity}, function(error,result){
     if(error)
@@ -591,6 +639,10 @@ function getEmailAddresses(response,userID)
     "UserID":userID
   };
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
     var collection = connection.collection('EmailAddresses');
   collection.find(entity).toArray(function(error,result){
     if(error)
@@ -625,6 +677,10 @@ function insertCallLog(response,userID,startTime,endTime,callNo)
     "CallNo": callNo
   };
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+ if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('CallLog');
   collection.insert(entity ,function(error,result){
     if(error)
@@ -671,6 +727,10 @@ function getTollNo(response,meetingno,area,city,dialInProvider)
     "MeetingID": meetingno
   };
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+ if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('DialInNumbers');
   var MeetingTolls = connection.collection('MeetingTolls');
   /////////Start Pick with Country and City From Global DialIns////////////////
@@ -777,6 +837,10 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
 function deleteDialInNumber(response,id){
   var sid = BSON.ObjectID.createFromHexString(id);
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('DialInNumbers');
   collection.remove({_id:sid},function(error, result) {
     if(error)
@@ -801,6 +865,10 @@ function deleteDialInNumber(response,id){
 function getDialInNumbers(response)
 {
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('DialInNumbers');
     // var entity = {
     //   "Area": area,
@@ -861,6 +929,10 @@ function AddDialInNumbersAction(response,area,city,number,dialInProvider)
 
     // }
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+ if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
    var collection = connection.collection('DialInNumbers');
     collection.insert(entity, function(error, result) {
       if(error)
@@ -894,6 +966,10 @@ function getCreditBalance(response,userID)
     "UserID": userID,
   };
 mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+ if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
    var collection = connection.collection('UserCredits');
   collection.findOne(entity, function(error, result) {
     if(error)
@@ -921,6 +997,10 @@ function deductCreditBalance(response,userID){
    
  
    mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+    if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('UserCredits');
   collection.findOne({"UserID":userID},function(err,data){
   if(err)
@@ -972,6 +1052,10 @@ function getPinlessInvitation(response){
 
   
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
     var Invitations = connection.collection('Invitations');
     
 
@@ -1006,6 +1090,10 @@ function getPinOfInvitation(response,code){
 
   
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
     var Invitations = connection.collection('Invitations');
         
           //var pincode=replaceAll(code,'-','');
@@ -1052,6 +1140,10 @@ function getPinOfInvitation(response,code){
 function updatePIN(response,id,pin){
   var sid = BSON.ObjectID.createFromHexString(id);
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var collection = connection.collection('Invitations');
   collection.update({_id:sid},{$set:{PIN:pin}},function(error, result) {
     if(error)
@@ -1079,6 +1171,10 @@ function getInvitations(response,userID,id){
   if( id == null ) id = 0;
 //console.log(config.MONGO_CONNECTION_STRING);
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
     var Invitations = connection.collection('Invitations');
     var Invitees = connection.collection('Invitees');
 
@@ -1189,6 +1285,10 @@ function InsertMeetingTolls(localtolls){
   utility.debug("Meeting Tolls to insert");
   utility.debug(localtolls);
    mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+    if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
       var Tolls = connection.collection('MeetingTolls');
       Tolls.insert(localtolls,function(err,rslt){
           if(err){
@@ -1214,6 +1314,10 @@ function insertInvitationEntity(entity,addresses,localtolls)
 
 
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var Invitations = connection.collection('Invitations');
   var Invitees = connection.collection('Invitees');
   var EmailAddresses = connection.collection('EmailAddresses');
@@ -1305,6 +1409,10 @@ function insertInvitationEntity(entity,addresses,localtolls)
 function insertInvitationEntity_backdated(entity,addresses)
 {
   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+      return;
+  }
   var Invitations = connection.collection('Invitations');
   var Invitees = connection.collection('Invitees');
   var EmailAddresses = connection.collection('EmailAddresses');

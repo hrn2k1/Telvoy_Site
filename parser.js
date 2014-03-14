@@ -1,6 +1,5 @@
 
 
-
 var inspect = require('util').inspect;
 var config = require('./config.js');
 //var mimelib = require("mimelib-noiconv");
@@ -117,6 +116,13 @@ function parseString(str, delimiter, endMarker, allowFuzzy, usePattern)
   {
     keyword: 'country',
     alts: 'Afghanistan',
+    pattern: '[0-9\\-+]+',
+    fuzzy: true,
+    
+  },
+  {
+    keyword: 'country',
+    alts: 'United States',
     pattern: '[0-9\\-+]+',
     fuzzy: true,
     

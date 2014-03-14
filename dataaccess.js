@@ -1,4 +1,3 @@
-
 var config=require('./config.js');
 var utility=require('./utility.js');
 var mongo = require('mongodb');
@@ -687,7 +686,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
     else
     {
       utility.log("getTollNo("+area+","+city+","+dialInProvider+"): ");
-      console.log(result1);
+      utility.log(result1);
       if(result1 !=null){
         response.setHeader("content-type", "text/plain");
         response.write(JSON.stringify(result1));
@@ -729,7 +728,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
               }
               else{
                 utility.log("getTollNo("+meetingno+","+area+"): ");
-                console.log(result3);
+                utility.log(result3);
                 if(result3 !=null)
                 {
                 response.setHeader("content-type", "text/plain");
@@ -752,7 +751,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
                     else
                     {
                       utility.log("getTollNo("+meetingno+"): ");
-                      console.log(result4);
+                      utility.log(result4);
                        response.setHeader("content-type", "text/plain");
                         response.write(JSON.stringify(result4));
                         response.end();
@@ -1095,7 +1094,7 @@ function getInvitations(response,userID,id){
       }
       else
       {
-        console.log(result);
+        utility.log(result);
         /////
 
           var Invitations_ids = [];
@@ -1314,7 +1313,7 @@ function insertInvitationEntity_backdated(entity,addresses)
 
   Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
     if(error){
-      console.log("Error in find invitation with AccessCode to check duplicate" + error);
+      utility.log("Error in find invitation with AccessCode to check duplicate" + error);
     } else{
       //console.log("Invitation  found nor" + result_invite);
         if(result_invite == null){
@@ -1326,8 +1325,8 @@ function insertInvitationEntity_backdated(entity,addresses)
           }
           else
           {
-            console.log('insert invitation result.........||');
-            console.log(result);
+            utility.log('insert invitation result.........||');
+            utility.log(result);
             utility.log("Invitation inserted Successfully");
             for (var i = 0; i < addresses.length; i++) {
               //var emailID = addresses[i].address;
@@ -1347,8 +1346,8 @@ function insertInvitationEntity_backdated(entity,addresses)
                     "EmailID": result1.EmailID,
                     "Invitations_id": result[0]._id
                   };
-                   console.log('invitee object to insert');
-                   console.log(entity);
+                   utility.log('invitee object to insert');
+                   utility.log(entity);
                   Invitees.insert(entity,function(e,r){
                     if(e){
                        utility.log("insert Invitee error: " + e, 'ERROR');
@@ -1373,7 +1372,7 @@ function insertInvitationEntity_backdated(entity,addresses)
         });
       }
       else{
-        console.log("Invitation already exist for AccessCode: "+entity.AccessCode);
+        utility.log("Invitation already exist for AccessCode: "+entity.AccessCode);
       }
     }
   });

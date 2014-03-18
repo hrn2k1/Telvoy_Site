@@ -1240,7 +1240,7 @@ function getInvitations(response,userID,id){
    if(err) {
       utility.log('database connection error: '+err,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write('{\"invitations\":[]}');
       response.end();
       return;
   }

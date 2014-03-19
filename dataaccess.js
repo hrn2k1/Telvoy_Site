@@ -1,24 +1,33 @@
 var config=require('./config.js');
 var utility=require('./utility.js');
-var mongo = require('mongodb');
-var MongoClient = require('mongodb').MongoClient;
-var monk = require('monk');
+
  var mailer= require('./mailsender.js');
  var parser=require('./parser.js');
  var mimelib = require("mimelib-noiconv");
  var BSON = require('mongodb').BSONPure;
 var fs = require('fs');
 
-
-function getMeetingToll(response,meetingno,country){
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
-     response.setHeader("content-type", "text/plain");
+// function getConnection(callback){
+// mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+//    if(err) {
+//       utility.log('database connection error: '+err,'ERROR');
+//      if(callback !=null)
+//       callback(err,null);
+//   }
+// else{
+// }
+// });
+// }
+function getMeetingToll(response,connection,connection,meetingno,country){
+  
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
+      response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
       return;
   }
+
    var collection = connection.collection('MeetingTolls');
   collection.findOne({MeetingID:meetingno,Country:country}, function(error, result) {
     if(error){
@@ -26,7 +35,7 @@ function getMeetingToll(response,meetingno,country){
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else{
       utility.log('Meeting Toll for MeetingID: '+meetingno+' and country: '+country);
@@ -34,17 +43,16 @@ function getMeetingToll(response,meetingno,country){
       response.setHeader("content-type", "text/plain");
       response.write(JSON.stringify(result));
       response.end();
-      connection.close();
+      
     }
   });
-});
+
 }
 
-function AuthenticateUser(response,session,username,pass){
+function AuthenticateUser(response,connection,session,username,pass){
  
- mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-  if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+  if(connection==null) {
+      utility.log('database connection is null.','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -76,21 +84,20 @@ function AuthenticateUser(response,session,username,pass){
     }
 
   });
-});
+
  
 
 }
 
-function getRemainderTime(response,userID)
+function getRemainderTime(response,connection,userID)
 {
  
   var entity = {
     "UserID": userID
   };
-mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
- if(err) {
-      utility.log('database connection error: '+err,'ERROR');
-     response.setHeader("content-type", "text/plain");
+if(connection==null) {
+      utility.log('database connection is null.','ERROR');
+      response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
       return;
@@ -103,7 +110,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -111,22 +118,21 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
       response.setHeader("content-type", "text/plain");
       response.write(JSON.stringify(result));
       response.end();
-      connection.close();
+      
     }
   });
-});
+
 }
-function setRemainder(response,userID,remainder){
+function setRemainder(response,connection,userID,remainder){
  
   
  var entity_update = {
    "RemainderMinute": remainder,
    "TimeStamp": new Date()
  };
-mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
- if(err) {
-      utility.log('database connection error: '+err,'ERROR');
-     response.setHeader("content-type", "text/plain");
+if(connection==null) {
+      utility.log('database connection eis null','ERROR');
+      response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
       return;
@@ -139,7 +145,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
           response.setHeader("content-type", "text/plain");
           response.write('{\"Status\":\"Unsuccess\"}');
           response.end();
-          connection.close();
+          
         }
         else
         {
@@ -147,14 +153,14 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
           response.setHeader("content-type", "text/plain");
           response.write('{\"Status\":\"Success\"}');
           response.end();
-          connection.close();
+          
         }
         
       });
-});
+
 }
 
-function insertPushURL(response,url,userID){
+function insertPushURL(response,connection,url,userID){
   
   var entity_insert = {
    "Handle":url,
@@ -166,9 +172,8 @@ function insertPushURL(response,url,userID){
    "Handle":url,
    "TimeStamp": new Date()
  };
- mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-  if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -182,7 +187,7 @@ function insertPushURL(response,url,userID){
     response.setHeader("content-type", "text/plain");
     response.write('{\"Status\":\"Unsuccess\"}');
     response.end();
-    connection.close();
+    
   }
   else
   {
@@ -196,7 +201,7 @@ function insertPushURL(response,url,userID){
           response.setHeader("content-type", "text/plain");
           response.write('{\"Status\":\"Unsuccess\"}');
           response.end();
-          connection.close();
+          
         }
         else
         {
@@ -204,7 +209,7 @@ function insertPushURL(response,url,userID){
           response.setHeader("content-type", "text/plain");
           response.write('{\"Status\":\"Success\"}');
           response.end();
-          connection.close();
+          
         }
       });
     }
@@ -217,7 +222,7 @@ function insertPushURL(response,url,userID){
           response.setHeader("content-type", "text/plain");
           response.write('{\"Status\":\"Unsuccess\"}');
           response.end();
-          connection.close();
+          
         }
         else
         {
@@ -225,21 +230,21 @@ function insertPushURL(response,url,userID){
           response.setHeader("content-type", "text/plain");
           response.write('{\"Status\":\"Success\"}');
           response.end();
-          connection.close();
+          
         }
         
       });
     }
   }
 });
-});
+
 }
 
 function replaceAll(find, replace, str) {
   return str.replace(new RegExp(find, 'g'), replace);
 }
 
-function insertCalendarEvent(response,Subject,Details,StartTime,EndTime,OrganizarName,OrganizarEmail,AttendeesName,AttendeesEmail,AccountName,AccountKind,Location,Status,IsPrivate,IsAllDayEvent)
+function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTime,OrganizarName,OrganizarEmail,AttendeesName,AttendeesEmail,AccountName,AccountKind,Location,Status,IsPrivate,IsAllDayEvent)
 {
 
 
@@ -279,10 +284,9 @@ var invite_entity = {
                 MessageID: ''
                 };
 
-mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
- if(err) {
-      utility.log('database connection error: '+err,'ERROR');
-     response.setHeader("content-type", "text/plain");
+if(connection==null) {
+      utility.log('database connection is null','ERROR');
+      response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
       return;
@@ -295,7 +299,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
     response.setHeader("content-type", "text/plain");
     response.write('{\"Status\":\"Unsuccess\"}');
     response.end();
-    connection.close();
+    
   }
   else
   {
@@ -304,17 +308,17 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
     response.setHeader("content-type", "text/plain");
     response.write('{\"Status\":\"Success\"}');
     response.end();
-    connection.close();
+    
      insertInvitationEntity(invite_entity,addresses,out['tolls']);
   }
 });
-});
+
 }
 
 
 /// User Creation Method Exposed here
 //http://localhost:8080/user?userID=sumon@live.com&deviceID=1323809&firstName=Shams&lastName=Sumon%20Bhai&phoneNo=0181256341&masterEmail=sumon@live.com&location=Magura
-function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEmail,password,location)
+function insertUser(response,connection,userID,deviceID,firstName,lastName,phoneNo,masterEmail,password,location)
 {
 
 
@@ -345,10 +349,9 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
 
   utility.debug('User object to add');
   utility.debug(insert_entity);
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
-     response.setHeader("content-type", "text/plain");
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
+      response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
       return;
@@ -361,7 +364,7 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -374,16 +377,16 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
             response.setHeader("content-type", "text/plain");
             response.write('{\"Status\":\"Unsuccess\"}');
             response.end();
-            connection.close();
+            
           }
           else
           {
-            AddMasterEmail(userID,userID);
+            AddMasterEmail(connection,userID,userID);
             utility.log("Invitation inserted Successfully");
             response.setHeader("content-type", "text/plain");
             response.write('{\"Status\":\"Success\"}');
             response.end();
-            connection.close();
+            
           }
         });
       }
@@ -396,26 +399,26 @@ function insertUser(response,userID,deviceID,firstName,lastName,phoneNo,masterEm
           response.setHeader("content-type", "text/plain");
           response.write('{\"Status\":\"Unsuccess\"}');
           response.end();
-          connection.close();
+          
         }
         else
         {
-          AddMasterEmail(userID,userID);
+          AddMasterEmail(connection,userID,userID);
           utility.log("User Updated Successfully");
           response.setHeader("content-type", "text/plain");
           response.write('{\"Status\":\"Success\"}');
           response.end();
-          connection.close();
+          
         }
         
       });
      }
    }
  });
-});
+
 }
 
-function AddMasterEmail(userID,emailID){
+function AddMasterEmail(connection,userID,emailID){
 
 var entity = {
     "UserID": userID,
@@ -423,10 +426,10 @@ var entity = {
     "Verified": true
   };
 
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
-    return;
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
+     
+      return;
   }
  var collection = connection.collection('EmailAddresses');
  collection.findOne({"UserID":userID,"EmailID":emailID},function(err,addr){
@@ -456,7 +459,7 @@ var entity = {
   }
  }
  });
-});
+
 }
 function SendConfirmationEmail(id,email){
 
@@ -465,14 +468,13 @@ function SendConfirmationEmail(id,email){
       var msg=config.EMAIL_ADDRESS_CONFIRMATION_BODY.replace('[LINK]',link);
       mailer.sendMail(config.EMAIL_ADDRESS_CONFIRMATION_SUBJECT,msg,email);
 }
-function VerifiedEmailAddress(response,id,email){
+function VerifiedEmailAddress(response,connection,id,email){
 
   var sid = BSON.ObjectID.createFromHexString(id);
 
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
-     response.setHeader("content-type", "text/plain");
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
+      response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
       return;
@@ -487,7 +489,7 @@ function VerifiedEmailAddress(response,id,email){
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -510,7 +512,7 @@ function VerifiedEmailAddress(response,id,email){
       // response.setHeader("content-type", "text/plain");
       // response.write('{\"Status\":\"Success\",\"Message\":\"Your Email Addreess '+ email +' Verified Successfully\"}');
       // response.end();
-      connection.close();
+      
       }
       else
       {
@@ -528,17 +530,17 @@ function VerifiedEmailAddress(response,id,email){
         // response.setHeader("content-type", "text/plain");
         // response.write('{\"Status\":\"Unsuccess\",\"Message\":\"The link is incorrect or has been expired.\"}');
         // response.end();
-        connection.close();
+        
       }
     }
   });
-});
+
 }
 
 
 // http://localhost:8080/addemail?userID=sumon@live.com&emailID=sumon3@live.com
 //// Add method to add User's Other Emails 
-function insertEmailAddress(response,userID,emailID)
+function insertEmailAddress(response,connection,userID,emailID)
 {
  
   var entity = {
@@ -546,10 +548,9 @@ function insertEmailAddress(response,userID,emailID)
     "EmailID": emailID,
     "Verified": false
   };
-mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
- if(err) {
-      utility.log('database connection error: '+err,'ERROR');
-     response.setHeader("content-type", "text/plain");
+if(connection==null) {
+      utility.log('database connection is null','ERROR');
+      response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
       return;
@@ -562,7 +563,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -573,25 +574,24 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Success\"}');
       response.end();
-      connection.close();
+      
     }
   });
-});
+
 }
 
 
 // http://localhost:8080/removeemail?userID=sumon@live.com&emailID=sumon3@live.com
 //// Remove method to remove User's Other Emails
-function deleteEmailAddress(response,userID,emailID)
+function deleteEmailAddress(response,connection,userID,emailID)
 {
   
   var entity = {
     "UserID": userID,
     "EmailID": emailID
   };
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+ if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -605,7 +605,7 @@ function deleteEmailAddress(response,userID,emailID)
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -613,23 +613,22 @@ function deleteEmailAddress(response,userID,emailID)
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Success\"}');
       response.end();
-      connection.close();
+      
     }
   });
-});
+
 }
 
 // http://localhost:8080/editemail?userID=sumon@live.com&oldEmailID=sumon4@live.com&newEmailID=sumon3@live.com
-function updateEmailAddress(response,userID,oldEmailID,newEmailID)
+function updateEmailAddress(response,connection,userID,oldEmailID,newEmailID)
 {
   
   var entity = {
     "EmailID": newEmailID,
     "Verified": false
   };
-   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-    if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+   if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -643,7 +642,7 @@ function updateEmailAddress(response,userID,oldEmailID,newEmailID)
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -658,22 +657,21 @@ function updateEmailAddress(response,userID,oldEmailID,newEmailID)
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Success\"}');
       response.end();
-      connection.close();
+      
     }
   });
-});
+
 }
 
 // http://localhost:8080/getemail?userID=sumon@live.com
-function getEmailAddresses(response,userID)
+function getEmailAddresses(response,connection,userID)
 {
   
   var entity = {
     "UserID":userID
   };
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -687,7 +685,7 @@ function getEmailAddresses(response,userID)
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"UnSuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -695,15 +693,15 @@ function getEmailAddresses(response,userID)
       response.setHeader("content-type", "text/plain");
       response.write("{\"Emails\":" + JSON.stringify(result) + "}");
       response.end();
-      connection.close();
+      
     }
   });
-});
+
 }
 
 // http://localhost:8080/addcalllog?userID=harun@live.com&startTime=2013-12-31%2016:00:00&endTime=2013-12-31%2016:10:00&callNo=+8801816745951
 /// User Call Log History
-function insertCallLog(response,userID,startTime,endTime,callNo)
+function insertCallLog(response,connection,userID,startTime,endTime,callNo)
 {
   
   var entity = {
@@ -712,9 +710,8 @@ function insertCallLog(response,userID,startTime,endTime,callNo)
     "EndTime": endTime,
     "CallNo": callNo
   };
-mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
- if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -728,7 +725,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -736,17 +733,17 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Success\"}');
       response.end();
-      connection.close();
+      
     }
   });
-});
+
 }
 
 /// Mapping Dial In 
 // http://localhost:8080/toll?area=Australia&dialInProvider=WebEx
 // {"Tolls":[{"ID":1,"Area":"Australia","Number":"+61 29037 1692","Provider":"WebEx"}]}
 
-function getTollNo(response,meetingno,area,city,dialInProvider)
+function getTollNo(response,connection,meetingno,area,city,dialInProvider)
 {
   
   var where1 = {
@@ -765,9 +762,8 @@ function getTollNo(response,meetingno,area,city,dialInProvider)
   var where4 = {
     "MeetingID": meetingno
   };
-mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
- if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -783,7 +779,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -793,7 +789,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
         response.setHeader("content-type", "text/plain");
         response.write(JSON.stringify(result1));
         response.end();
-        connection.close();
+        
     }
     else{
 
@@ -805,7 +801,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -815,7 +811,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
         response.setHeader("content-type", "text/plain");
         response.write(JSON.stringify(result2));
         response.end();
-        connection.close();
+        
       }
       else{
         ////////////////Start Pick with Country FROM MeetingTolls///////////////
@@ -826,7 +822,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
               response.setHeader("content-type", "text/plain");
               response.write('{\"Status\":\"Unsuccess\"}');
               response.end();
-              connection.close();
+              
               }
               else{
                 utility.log("getTollNo("+meetingno+","+area+"): ");
@@ -836,7 +832,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
                 response.setHeader("content-type", "text/plain");
                 response.write(JSON.stringify(result3));
                 response.end();
-                connection.close();
+                
                 }
                 else{
 
@@ -848,7 +844,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
                     response.setHeader("content-type", "text/plain");
                     response.write('{\"Status\":\"Unsuccess\"}');
                     response.end();
-                    connection.close();
+                    
                     }
                     else
                     {
@@ -857,7 +853,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
                        response.setHeader("content-type", "text/plain");
                         response.write(JSON.stringify(result4));
                         response.end();
-                        connection.close();
+                        
                     }
                   });
                   ////////////////////End Pick By Meeting ID only//////////////////////
@@ -874,13 +870,12 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
     }
   });
   ///////////////////End Pick with Country and City From Global DialIns///////////
-});
+
 }
-function deleteDialInNumber(response,id){
+function deleteDialInNumber(response,connection,id){
   var sid = BSON.ObjectID.createFromHexString(id);
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -894,7 +889,7 @@ function deleteDialInNumber(response,id){
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -902,16 +897,16 @@ function deleteDialInNumber(response,id){
       response.setHeader("content-type", "application/json");
       response.write('{\"Status\":\"Successfully dleleted.\"}');
       response.end();
-      connection.close();
+      
     }
   });
-});
+
 }
-function getDialInNumbers(response)
+function getDialInNumbers(response,connection)
 {
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+  
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -930,7 +925,7 @@ function getDialInNumbers(response)
         response.setHeader("content-type", "text/plain");
         response.write('{\"Status\":\"Unsuccess\"}');
         response.end();
-        connection.close();
+        
       }
       else
       {
@@ -950,17 +945,17 @@ function getDialInNumbers(response)
           response.setHeader("content-type", "application/json");
           response.write("{\"data\":" + JSON.stringify(result) + "}");
           response.end();
-          connection.close();
+          
 
 
 
 
         }
       });
-});
+
 }
 
-function AddDialInNumbersAction(response,area,city,number,dialInProvider)
+function AddDialInNumbersAction(response,connection,area,city,number,dialInProvider)
 {
   //console.log(area+' : '+dialInProvider);
  
@@ -976,9 +971,8 @@ function AddDialInNumbersAction(response,area,city,number,dialInProvider)
     // } else {
 
     // }
-mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
- if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -992,7 +986,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
         response.setHeader("content-type", "application/json");
         response.write('{\"Status\":\"Error in Adding !!!\"}');
         response.end();
-        connection.close();
+        
       }
       else
       {
@@ -1000,25 +994,24 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
         response.setHeader("content-type", "application/json");
         response.write('{\"Status\":\"Successfully added.\"}');
         response.end();
-        connection.close();
+        
       }
     });
-  });
+
   }
 
 // Get user's call credit info
 // http://localhost:8080/credit?userID=harun@live.com
 // {"_id":"52d8fd70e4b04b3452b13eb3","UserID":"harun@live.com","Credit":100}
 
-function getCreditBalance(response,userID)
+function getCreditBalance(response,connection,userID)
 {
  
   var entity = {
     "UserID": userID,
   };
-mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
- if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -1032,7 +1025,7 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -1040,19 +1033,18 @@ mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connecti
       response.setHeader("content-type", "text/plain");
       response.write(JSON.stringify(result));
       response.end();
-      connection.close();
+      
     }
   });
-});
+
 }
-function deductCreditBalance(response,userID){
+function deductCreditBalance(response,connection,userID){
     utility.debug('Deduct credit balance for '+userID);
 
    
  
-   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-    if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -1066,7 +1058,7 @@ function deductCreditBalance(response,userID){
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -1084,7 +1076,7 @@ function deductCreditBalance(response,userID){
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -1092,7 +1084,7 @@ function deductCreditBalance(response,userID){
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Success\"}');
       response.end();
-      connection.close();
+      
     }
   });
 
@@ -1100,17 +1092,15 @@ function deductCreditBalance(response,userID){
   }
   });
   
-});
 
 
 }
 
-function getPinlessInvitation(response){
+function getPinlessInvitation(response,connection){
 
   
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -1127,7 +1117,7 @@ function getPinlessInvitation(response){
             response.setHeader("content-type", "text/plain");
             response.write('{\"Status\":\"Unsuccess\"}');
             response.end();
-            connection.close();
+            
           }
           else
           {
@@ -1136,22 +1126,20 @@ function getPinlessInvitation(response){
             response.setHeader("content-type", "application/json");
              response.write("{\"data\":" + JSON.stringify(result) + "}");
             response.end();
-            connection.close();
+            
           }
 
           });
 
         /////
-      
-  });
+
 }
 
-function getPinOfInvitation(response,code){
+function getPinOfInvitation(response,connection,code){
 
   
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -1167,7 +1155,7 @@ function getPinOfInvitation(response,code){
             response.setHeader("content-type", "text/plain");
             response.write('{\"Status\":\"Unsuccess\"}');
             response.end();
-            connection.close();
+            
           }
           else
           {
@@ -1182,7 +1170,7 @@ function getPinOfInvitation(response,code){
             response.setHeader("content-type", "application/json");
              response.write(JSON.stringify(pinInv));
             response.end();
-            connection.close();
+            
             }
             else
             {
@@ -1190,21 +1178,19 @@ function getPinOfInvitation(response,code){
             response.setHeader("content-type", "text/plain");
             response.write('{\"Status\":\"Unsuccess\"}');
             response.end();
-            connection.close();
+            
             }
           }
 
           });
 
         /////
-      
-  });
+  
 }
-function updatePIN(response,id,pin){
+function updatePIN(response,connection,id,pin){
   var sid = BSON.ObjectID.createFromHexString(id);
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+ if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
@@ -1218,7 +1204,7 @@ function updatePIN(response,id,pin){
       response.setHeader("content-type", "text/plain");
       response.write('{\"Status\":\"Unsuccess\"}');
       response.end();
-      connection.close();
+      
     }
     else
     {
@@ -1226,20 +1212,20 @@ function updatePIN(response,id,pin){
       response.setHeader("content-type", "application/json");
       response.write('{\"Status\":\"Successfully Set the PIN.\"}');
       response.end();
-      connection.close();
+      
     }
   });
-});
+
 }
-function getInvitations(response,userID,id){
+function getInvitations(response,connection,userID,id){
 
   if( userID == null ) userID = 'sumon@live.com';
   if( id == null ) id = 0;
 //console.log(config.MONGO_CONNECTION_STRING);
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+ if(connection==null) {
+      utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
+      //response.write('{\"Status\":\"Unsuccess\"}');
       response.write('{\"invitations\":[]}');
       response.end();
       return;
@@ -1255,7 +1241,7 @@ function getInvitations(response,userID,id){
         response.setHeader("content-type", "text/plain");
         response.write('{\"Status\":\"Unsuccess\"}');
         response.end();
-        connection.close();
+        
       }
       else
       {
@@ -1275,7 +1261,7 @@ function getInvitations(response,userID,id){
             response.setHeader("content-type", "text/plain");
             response.write('{\"Status\":\"Unsuccess\"}');
             response.end();
-            connection.close();
+            
           }
           else
           {
@@ -1283,7 +1269,7 @@ function getInvitations(response,userID,id){
             response.setHeader("content-type", "text/plain");
             response.write("{\"invitations\":"+JSON.stringify(result)+"}");
             response.end();
-            connection.close();
+            
           }
 
           });
@@ -1291,7 +1277,7 @@ function getInvitations(response,userID,id){
         /////
       }
     });
-  });
+
 }
 
 
@@ -1346,37 +1332,34 @@ else{
 
 
 
-function InsertMeetingTolls(localtolls){
+function InsertMeetingTolls(connection,localtolls){
   if(localtolls=='undefined') return;
   if(localtolls==null) return;
   if(localtolls.length==0) return;
 
   utility.debug("Meeting Tolls to insert");
   utility.debug(localtolls);
-   mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-    if(err) {
-      utility.log('database connection error: '+err,'ERROR');
-      response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
-      response.end();
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
+      
       return;
   }
       var Tolls = connection.collection('MeetingTolls');
       Tolls.insert(localtolls,function(err,rslt){
           if(err){
             utility.log('Insert MeetingTolls Error: '+err,'ERROR');
-            connection.close();
+            
           }
           else{
             utility.log("Successfully Inserted "+localtolls.length+" Meeting Tolls.");
-            connection.close();
+            
           }
       });
       
-  });
+ 
 }
 
-function insertInvitationEntity(entity,addresses,localtolls)
+function insertInvitationEntity(connection,entity,addresses,localtolls)
 {
    if(localtolls!=null && localtolls.length>0){
     for (var i = 0; i < localtolls.length; i++) {
@@ -1385,9 +1368,9 @@ function insertInvitationEntity(entity,addresses,localtolls)
    }
 
 
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
+ if(connection==null) {
+      utility.log('database connection is null','ERROR');
+     
       return;
   }
   var Invitations = connection.collection('Invitations');
@@ -1412,7 +1395,7 @@ function insertInvitationEntity(entity,addresses,localtolls)
     Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
     if(error){
       utility.log("Error in find invitation with AccessCode to check duplicate" + error,'ERROR');
-       connection.close();
+       
     } else{
       //console.log("Invitation  found nor" + result_invite);
         if(result_invite == null){
@@ -1420,14 +1403,14 @@ function insertInvitationEntity(entity,addresses,localtolls)
           if(error)
           {
             utility.log("insertInvitationEntity() error: " + error, 'ERROR');
-            connection.close();
+            
           }
           else
           {
             utility.debug('insert invitation result.........');
             utility.debug(result);
             utility.log("Invitation inserted Successfully");
-            InsertMeetingInvitees(EmailAddresses,Invitees,result[0]._id,addresses,0,function(){ InsertMeetingTolls(localtolls);});
+            InsertMeetingInvitees(EmailAddresses,Invitees,result[0]._id,addresses,0,function(){ InsertMeetingTolls(connection,localtolls);});
             //connection.close();  
             
           }
@@ -1439,7 +1422,7 @@ function insertInvitationEntity(entity,addresses,localtolls)
           if(error)
           {
             utility.log("update error in insertInvitationEntity() error: " + error, 'ERROR');
-            connection.close();
+            
           }
           else
           {
@@ -1449,11 +1432,11 @@ function insertInvitationEntity(entity,addresses,localtolls)
             Invitees.remove({Invitations_id:result_invite._id},function(err,res){
               if(err){
               utility.log("delete error in insertInvitationEntity() error: " + error, 'ERROR');
-              connection.close();
+              
               }
               else{
                 utility.debug('deleted all previous invitees.')
-                 InsertMeetingInvitees(EmailAddresses,Invitees,result_invite._id,addresses,0,function(){ InsertMeetingTolls(localtolls);});
+                 InsertMeetingInvitees(EmailAddresses,Invitees,result_invite._id,addresses,0,function(){ InsertMeetingTolls(connection,localtolls);});
               }
             });
            
@@ -1472,93 +1455,11 @@ function insertInvitationEntity(entity,addresses,localtolls)
  });
   
 
-  
-});
+
 
 }
 
 
-function insertInvitationEntity_backdated(entity,addresses)
-{
-  mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
-   if(err) {
-      utility.log('database connection error: '+err,'ERROR');
-      return;
-  }
-  var Invitations = connection.collection('Invitations');
-  var Invitees = connection.collection('Invitees');
-  var EmailAddresses = connection.collection('EmailAddresses');
-
-  
-
-  Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
-    if(error){
-      utility.log("Error in find invitation with AccessCode to check duplicate" + error);
-    } else{
-      //console.log("Invitation  found nor" + result_invite);
-        if(result_invite == null){
-         Invitations.insert(entity, function(error, result) {
-          if(error)
-          {
-            utility.log("insertInvitationEntity() error: " + error, 'ERROR');
-            connection.close();
-          }
-          else
-          {
-            utility.log('insert invitation result.........||');
-            utility.log(result);
-            utility.log("Invitation inserted Successfully");
-            for (var i = 0; i < addresses.length; i++) {
-              //var emailID = addresses[i].address;
-              EmailAddresses.findOne({EmailID: addresses[i].address}, function(error, result1){
-                if(!error){
-                  if(result1==null){
-                    utility.log(addresses[i].address+' not found in white list');
-                      //send email
-                     
-                    mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,addresses[i].address);
-                  
-                  }
-                  else{
-                    //var userID = result1.UserID;
-                    var entity = {
-                    "UserID": result1.UserID,
-                    "EmailID": result1.EmailID,
-                    "Invitations_id": result[0]._id
-                  };
-                   utility.log('invitee object to insert');
-                   utility.log(entity);
-                  Invitees.insert(entity,function(e,r){
-                    if(e){
-                       utility.log("insert Invitee error: " + e, 'ERROR');
-                       //connection.close();
-                    }
-                    else
-                    {
-                     mailer.sendMail(config.ATTENDEE_EMAIL_SUBJECT,config.ATTENDEE_EMAIL_BODY,result1.EmailID);
-                     //connection.close();
-                   }
-                  });
-                 
-                    
-                  }
-                  
-                }
-              });
-            }
-            //connection.close();  
-            
-          }
-        });
-      }
-      else{
-        utility.log("Invitation already exist for AccessCode: "+entity.AccessCode);
-      }
-    }
-  });
-});
-
-}
 
 
 

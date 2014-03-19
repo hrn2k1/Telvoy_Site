@@ -1,15 +1,3 @@
-/* lib/mailee.js
- *
- * Reads unread mails from imap inbox defined in config.js.
- * Checks if sender is an user in SqERL and parses email
- * sender, subject, body and image attachment to new whatshot
- * item poster, title, body and image respectively. Mails
- * are then marked as read. This is currently run from app.js
- * peridiocally.
- */
-
-
-
 var fs = require('fs');
 var inspect = require('util').inspect;
 var config = require('./config.js');
@@ -17,12 +5,9 @@ var dao=require('./dataaccess.js');
 var mimelib = require("mimelib-noiconv");
 var utility=require('./utility.js');
 var querystring = require("querystring");
-
+var MongoClient = require('mongodb').MongoClient;
+var mongo = require('mongodb');
 var debug = config.IS_DEBUG_MODE;
-
-
-
-
 
 
 var http = require("http");
@@ -65,8 +50,16 @@ var Sessions = require("sessions"), sessionHandler = new Sessions(); // memory s
 
 process.on('uncaughtException', function (err) {
     //fs.writeFile("test.txt",  err, "utf8");   
-     fs.appendFile("test.txt", (new Date()).toISOString()+'>>'+ err+"   ", "utf8");   
-})
+     fs.appendFile("siteerrorlog.txt", (new Date()).toISOString()+'>>'+ err+"   ", "utf8");   
+});
+
+mongo.MongoClient.connect(config.MONGO_CONNECTION_STRING, function(err, connection) {
+   if(err) {
+      utility.log('database connection error: '+err,'ERROR');
+    
+  }
+else{
+
 http.createServer(function(request, response) {
     var uri = url.parse(request.url).pathname;
 
@@ -109,6 +102,19 @@ http.createServer(function(request, response) {
                     }
                 });
             }
+    else if(RightString(uri,4).toLowerCase()==".log"){
+         //console.log(RightString(uri,3));
+         fs.readFile(__dirname+uri  ,function(error,data){
+       if(error){
+           response.writeHead(404,{"Content-type":"text/plain"});
+           response.end("Sorry the page was not found"+error);
+       }else{
+           response.writeHead(202,{"Content-type":"text/plain"});
+           response.end(data);
+
+       }
+        });
+    }
     else if(uri.toLowerCase()=="/logo")
             {
                 
@@ -173,20 +179,20 @@ http.createServer(function(request, response) {
     else if (uri.toLowerCase() === "/authenticate") {
         var query = url.parse(request.url).query;
         var params=querystring.parse(query);
-          dao.AuthenticateUser(response,session,utility.isNull(params['username'],''),utility.isNull(params['pass'],''));
+          dao.AuthenticateUser(response,connection,session,utility.isNull(params['username'],''),utility.isNull(params['pass'],''));
          
     }
     else if (uri.toLowerCase() === "/conf") {
-        utility.log('I am in /conf');
+        //utility.log('I am in /conf');
         var query = url.parse(request.url).query;
         var params=querystring.parse(query);
-          dao.getInvitations(response,utility.Nullify(params['userID']),utility.Nullify(params['id']));
+          dao.getInvitations(response,connection,utility.Nullify(params['userID']),utility.Nullify(params['id']));
          
     }
     
     else if (uri.toLowerCase() === "/notif") {
         utility.log(request.url);
-        dao.getNotifications(response);
+        dao.getNotifications(response,connection);
         
     } 
     else if (uri.toLowerCase() === "/user") {
@@ -194,7 +200,7 @@ http.createServer(function(request, response) {
         var user=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //utility.log(user);
-        dao.insertUser(response,utility.Nullify(user['userID']),utility.Nullify(user['deviceID']),utility.Nullify(user['firstName']),utility.Nullify(user['lastName']),utility.Nullify(user['phoneNo']),utility.Nullify(user['masterEmail']),utility.Nullify(user['password']),utility.Nullify(user['location']) );
+        dao.insertUser(response,connection,utility.Nullify(user['userID']),utility.Nullify(user['deviceID']),utility.Nullify(user['firstName']),utility.Nullify(user['lastName']),utility.Nullify(user['phoneNo']),utility.Nullify(user['masterEmail']),utility.Nullify(user['password']),utility.Nullify(user['location']) );
         
     }
     //
@@ -203,7 +209,7 @@ http.createServer(function(request, response) {
         var user=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //console.log(u);
-        dao.insertPushURL(response,utility.Nullify(user['handle']),utility.Nullify(user['userID']));
+        dao.insertPushURL(response,connection,utility.Nullify(user['handle']),utility.Nullify(user['userID']));
         
     }
     else if(uri.toLowerCase() === "/setremainder") {
@@ -211,7 +217,7 @@ http.createServer(function(request, response) {
         var user=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //console.log(u);
-        dao.setRemainder(response,utility.isNull(user['userID'],''),utility.isNull(user['remainder'],10));
+        dao.setRemainder(response,connection,utility.isNull(user['userID'],''),utility.isNull(user['remainder'],10));
         
     }
     else if(uri.toLowerCase() === "/getregister") {
@@ -219,7 +225,7 @@ http.createServer(function(request, response) {
         var user=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //console.log(u);
-        dao.getRemainderTime(response,utility.isNull(user['userID'],''));
+        dao.getRemainderTime(response,connection,utility.isNull(user['userID'],''));
         
     }
     else if (uri.toLowerCase() === "/addemail") {
@@ -227,15 +233,15 @@ http.createServer(function(request, response) {
         var user=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         utility.log(user);
-        // dao.insertEmailAddress(response,utility.Nullify(user['userID']),utility.Nullify(user['emailID']));
-        dao.insertEmailAddress(response,utility.Nullify(user['userID']),utility.Nullify(user['emailID']));
+        // dao.insertEmailAddress(response,connection,utility.Nullify(user['userID']),utility.Nullify(user['emailID']));
+        dao.insertEmailAddress(response,connection,utility.Nullify(user['userID']),utility.Nullify(user['emailID']));
     }
     else if (uri.toLowerCase() === "/removeemail") {
         var query = url.parse(request.url).query;
         var user=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //console.log(u);
-        dao.deleteEmailAddress(response,utility.Nullify(user['userID']),utility.Nullify(user['emailID']));
+        dao.deleteEmailAddress(response,connection,utility.Nullify(user['userID']),utility.Nullify(user['emailID']));
         
     }
     else if (uri.toLowerCase() === "/editemail") {
@@ -243,7 +249,7 @@ http.createServer(function(request, response) {
         var user=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //console.log(u);
-        dao.updateEmailAddress(response,utility.Nullify(user['userID']),utility.Nullify(user['oldEmailID']),utility.Nullify(user['newEmailID']));
+        dao.updateEmailAddress(response,connection,utility.Nullify(user['userID']),utility.Nullify(user['oldEmailID']),utility.Nullify(user['newEmailID']));
         
     }
     else if (uri.toLowerCase() === "/getemail") {
@@ -251,7 +257,7 @@ http.createServer(function(request, response) {
         var user=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //console.log(u);
-        dao.getEmailAddresses(response,utility.Nullify(user['userID']));
+        dao.getEmailAddresses(response,connection,utility.Nullify(user['userID']));
         
     }
     else if (uri.toLowerCase() === "/eac") {
@@ -259,7 +265,7 @@ http.createServer(function(request, response) {
         var params=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //console.log(params);
-        dao.VerifiedEmailAddress(response,utility.isNull(params['_id'],'0000000'),utility.isNull(params['e'],'empty@empty.empty'));
+        dao.VerifiedEmailAddress(response,connection,utility.isNull(params['_id'],'0000000'),utility.isNull(params['e'],'empty@empty.empty'));
         
     }
     else if (uri.toLowerCase() === "/addcalllog") {
@@ -267,7 +273,7 @@ http.createServer(function(request, response) {
         var user=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //console.log(u);
-        dao.insertCallLog(response,utility.Nullify(user['userID']),new Date(Date.parse(utility.isNull(user['startTime'],''))),new Date(Date.parse(utility.isNull(user['endTime'],''))),utility.Nullify(user['callNo']));
+        dao.insertCallLog(response,connection,utility.Nullify(user['userID']),new Date(Date.parse(utility.isNull(user['startTime'],''))),new Date(Date.parse(utility.isNull(user['endTime'],''))),utility.Nullify(user['callNo']));
         
     }
     else if (uri.toLowerCase() === "/toll") {
@@ -276,13 +282,13 @@ http.createServer(function(request, response) {
         //var u=utility.Nullify(user['u']);
         //console.log(u);
 
-        dao.getTollNo(response,utility.isNull(params['meetingno'],''),utility.isNull(params['area'],''),utility.isNull(params['city'],''),utility.isNull(params['dialInProvider'],'WebEx'));
+        dao.getTollNo(response,connection,utility.isNull(params['meetingno'],''),utility.isNull(params['area'],''),utility.isNull(params['city'],''),utility.isNull(params['dialInProvider'],'WebEx'));
         
     }
     else if (uri.toLowerCase() === "/meetingtoll") {
         var query = url.parse(request.url).query;
         var params=querystring.parse(query);
-        dao.getMeetingToll(response,utility.isNull(params['meetingno'],''),utility.isNull(params['country'],''));
+        dao.getMeetingToll(response,connection,utility.isNull(params['meetingno'],''),utility.isNull(params['country'],''));
         
     }
     
@@ -292,7 +298,7 @@ http.createServer(function(request, response) {
         //var u=utility.Nullify(user['u']);
         //console.log(u);
 
-        dao.getCreditBalance(response,utility.Nullify(user['userID']));
+        dao.getCreditBalance(response,connection,utility.Nullify(user['userID']));
         
     }
     else if(uri.toLowerCase()=="/deductcredit")
@@ -300,7 +306,7 @@ http.createServer(function(request, response) {
 
         var query = url.parse(request.url).query;
         var user=   querystring.parse(query);
-        dao.deductCreditBalance(response,utility.Nullify(user['userID']));
+        dao.deductCreditBalance(response,connection,utility.Nullify(user['userID']));
     }
     else if(uri.toLowerCase()=="/config")
     {
@@ -343,7 +349,7 @@ http.createServer(function(request, response) {
         //var u=utility.Nullify(user['u']);
         
 
-        dao.AddDialInNumbersAction(response,utility.isNull(user['area'],''),utility.isNull(user['city'],''),utility.isNull(user['number'],''),utility.isNull(user['provider'],'WebEx'));
+        dao.AddDialInNumbersAction(response,connection,utility.isNull(user['area'],''),utility.isNull(user['city'],''),utility.isNull(user['number'],''),utility.isNull(user['provider'],'WebEx'));
         
     }
     else if(uri.toLowerCase() === "/dialinnumbers") {
@@ -352,7 +358,7 @@ http.createServer(function(request, response) {
         //var u=utility.Nullify(user['u']);
         utility.log(user);
 
-        dao.getDialInNumbers(response);
+        dao.getDialInNumbers(response,connection);
     }
     else if(uri.toLowerCase() === "/deletenumber") {
         var query = url.parse(request.url).query;
@@ -360,7 +366,7 @@ http.createServer(function(request, response) {
         //var u=utility.Nullify(user['u']);
         utility.log(user);
 
-        dao.deleteDialInNumber(response,utility.isNull(user['_id'],'0'));
+        dao.deleteDialInNumber(response,connection,utility.isNull(user['_id'],'0'));
     }    
     else if(RightString(uri,3).toLowerCase()=="txt"){
          //console.log(RightString(uri,3));
@@ -393,14 +399,14 @@ http.createServer(function(request, response) {
                 var formData = querystring.parse(requestBody);
                 utility.log('form post data');
                 utility.log(formData);
-                dao.insertCalendarEvent(response,utility.isNull(formData['subject'],'[no subject]'),utility.isNull(formData['details'],''),utility.isNull(formData['startTime'],''),utility.isNull(formData['endTime'],''),utility.isNull(formData['organizarName'],''),utility.isNull(formData['organizarEmail'],''),utility.isNull(formData['attendeesName'],''),utility.isNull(formData['attendeesEmail'],''),utility.isNull(formData['accountName'],''),utility.isNull(formData['accountKind'],''),utility.isNull(formData['location'],''),utility.isNull(formData['status'],''),utility.isNull(formData['isPrivate'],false),utility.isNull(formData['isAllDayEvent'],false));
+                dao.insertCalendarEvent(response,connection,utility.isNull(formData['subject'],'[no subject]'),utility.isNull(formData['details'],''),utility.isNull(formData['startTime'],''),utility.isNull(formData['endTime'],''),utility.isNull(formData['organizarName'],''),utility.isNull(formData['organizarEmail'],''),utility.isNull(formData['attendeesName'],''),utility.isNull(formData['attendeesEmail'],''),utility.isNull(formData['accountName'],''),utility.isNull(formData['accountKind'],''),utility.isNull(formData['location'],''),utility.isNull(formData['status'],''),utility.isNull(formData['isPrivate'],false),utility.isNull(formData['isAllDayEvent'],false));
             });
         }
 
         //////////////////////////
         else if(uri.toLowerCase()=="/pinlessinvitations")
             {
-                dao.getPinlessInvitation(response);
+                dao.getPinlessInvitation(response,connection);
             }
         else if(uri.toLowerCase()=="/getpin")
             {
@@ -408,7 +414,7 @@ http.createServer(function(request, response) {
                 var params = querystring.parse(query);
                 //var u=utility.Nullify(user['u']);
                 //console.log(params);
-                dao.getPinOfInvitation(response,utility.isNull(params['meetingno'],''));
+                dao.getPinOfInvitation(response,connection,utility.isNull(params['meetingno'],''));
             }
         else if(uri.toLowerCase()=="/setpin")
             {
@@ -416,11 +422,11 @@ http.createServer(function(request, response) {
                 var params = querystring.parse(query);
                 //var u=utility.Nullify(user['u']);
                 //console.log(params);
-                dao.updatePIN(response,utility.isNull(params['_id'],''),utility.isNull(params['pin'],''));
+                dao.updatePIN(response,connection,utility.isNull(params['_id'],''),utility.isNull(params['pin'],''));
             }
         else if(uri.toLowerCase()=="/assignpin")
             {
-                CheckSession(response,session,"crm/assignpin.html");
+                CheckSession(response,connection,session,"crm/assignpin.html");
                 // console.log('Session.....');
                 // console.log(session.uid()+" >> "+session.get('userid'));
                 // fs.readFile("crm/assignpin.html" ,function(error,data){
@@ -442,7 +448,8 @@ http.createServer(function(request, response) {
     }
     });
 }).listen(process.env.port || 8080);
-
+}
+});
 sessionHandler.on("expired", function (uid) {
 utility.debug("Session ID: %s ! expired", uid);
 });

@@ -266,9 +266,15 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
  };
 
 var addresses = mimelib.parseAddresses(replaceAll(';', ',', AttendeesEmail));
+ if(OrganizarEmail !=null && OrganizarEmail !='')
+    {
+      var fromAttendee={"address":OrganizarEmail,"name":""};
+      addresses.push(fromAttendee);
+    }
 var out=parser.parseString(Details, ':', '\\n', true, false);
 var invite_entity = {
                 ToEmails : AttendeesEmail,
+                Forwarder: OrganizarEmail,
                 FromEmail: OrganizarEmail,
                 InvDate : StartTime,
                 InvTime : StartTime,
@@ -1361,6 +1367,10 @@ function InsertMeetingTolls(connection,localtolls){
 
 function insertInvitationEntity(connection,entity,addresses,localtolls)
 {
+  if(entity.EndTime=="" || entity.EndTime==null || entity.EndTime=="undefined"){ 
+  entity.EndTime= addMinutes(entity.InvTime,60); 
+  utility.log("Empty EndTime. and added 1 hr to InvTime: ",entity.EndTime);
+  }
    if(localtolls!=null && localtolls.length>0){
     for (var i = 0; i < localtolls.length; i++) {
       localtolls[i].MeetingID=entity.AccessCode;
@@ -1377,19 +1387,19 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
   var Invitees = connection.collection('Invitees');
   var EmailAddresses = connection.collection('EmailAddresses');
 
- EmailAddresses.findOne({"EmailID":entity.FromEmail,"Verified":true},function(senderError,sender){
+ EmailAddresses.findOne({"EmailID":entity.Forwarder,"Verified":true},function(senderError,sender){
  if(senderError){
   utility.log('Error in finding sender email in whitelist or not Verified','ERROR');
   return;
  }
  else{
   if(sender==null){
-    utility.log('Sender Email address '+ entity.FromEmail +' is not found in whitelist or not Verified.');
-     mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,entity.FromEmail);
+    utility.log('Sender(Forwarder) Email address '+ entity.Forwarder +' is not found in whitelist or not Verified.');
+     mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,entity.Forwarder);
     return;
   }
   else{
-    utility.log('Sender Email '+entity.FromEmail+' is found in whitelist with userID '+sender.UserID);
+    utility.log('Sender(Forwarder) Email '+entity.Forwarder+' is found in whitelist with userID '+sender.UserID);
     //////////////////////Start Invitation Process/////////////
 
     Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){

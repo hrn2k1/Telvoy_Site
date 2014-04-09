@@ -265,7 +265,10 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
    "IsAllDayEvent":IsAllDayEvent
  };
 
-var addresses = mimelib.parseAddresses(replaceAll(';', ',', AttendeesEmail));
+AttendeesEmail=replaceAll(';', ',', AttendeesEmail.toLowerCase());
+AttendeesEmail=replaceAll('mailto:', '', AttendeesEmail);
+var addresses = mimelib.parseAddresses(AttendeesEmail);
+
  if(OrganizarEmail !=null && OrganizarEmail !='')
     {
       var fromAttendee={"address":OrganizarEmail,"name":""};

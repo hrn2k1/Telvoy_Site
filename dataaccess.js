@@ -282,7 +282,7 @@ var invite_entity = {
                 InvDate : StartTime,
                 InvTime : StartTime,
                 EndTime: EndTime,
-                Subject: Subject,
+                Subject: Subject.replace('FW: ',''),
                 Toll: utility.isNull(out['toll'],''),
                 PIN: utility.isNull(out['pin'],''),
                 AccessCode: utility.isNull(out['code'],''),

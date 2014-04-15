@@ -182,6 +182,20 @@ http.createServer(function(request, response) {
           dao.AuthenticateUser(response,connection,session,utility.isNull(params['username'],''),utility.isNull(params['pass'],''));
          
     }
+     else if (uri.toLowerCase() === "/savelocation") {
+        //utility.log('I am in /conf');
+        var query = url.parse(request.url).query;
+        var params=querystring.parse(query);
+          dao.SaveUserLocation(response,connection,utility.Nullify(params['userID']),utility.Nullify(params['country']),utility.Nullify(params['city']));
+         
+    }
+    else if (uri.toLowerCase() === "/getlocation") {
+        //utility.log('I am in /conf');
+        var query = url.parse(request.url).query;
+        var params=querystring.parse(query);
+          dao.getUserLocation(response,connection,utility.Nullify(params['userID']));
+         
+    }
     else if (uri.toLowerCase() === "/conf") {
         //utility.log('I am in /conf');
         var query = url.parse(request.url).query;

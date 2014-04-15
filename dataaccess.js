@@ -7,8 +7,98 @@ var utility=require('./utility.js');
  var BSON = require('mongodb').BSONPure;
 var fs = require('fs');
 
+function getUserLocation(response,connection,userID){
 
-function getMeetingToll(response,connection,connection,meetingno,country){
+   if(connection==null) {
+      utility.log('database connection is null','ERROR');
+      response.setHeader("content-type", "text/plain");
+      response.write('{\"Status\":\"Unsuccess\"}');
+      response.end();
+      return;
+  }
+  var collection=connection.collection('UserLocation');
+  collection.findOne({UserID:userID},function(error,result){
+  if(error){
+      utility.log("Error in find UserLocation : "+error,'ERROR');
+      response.setHeader("content-type", "text/plain");
+      response.write('{\"Status\":\"Unsuccess\"}');
+      response.end();
+      
+    }
+    else{
+
+       utility.log('UserLocation for UserID: '+userID);
+       utility.log(result);
+      response.setHeader("content-type", "text/plain");
+      response.write(JSON.stringify(result));
+      response.end();
+    }
+
+  });
+}
+
+
+function SaveUserLocation(response,connection,userID,country,city){
+
+   if(connection==null) {
+      utility.log('database connection is null','ERROR');
+      response.setHeader("content-type", "text/plain");
+      response.write('{\"Status\":\"Unsuccess\"}');
+      response.end();
+      return;
+  }
+  var collection=connection.collection('UserLocation');
+  collection.findOne({UserID:userID},function(error,result){
+    if(error){
+      utility.log("Error in find UserLocation : "+error,'ERROR');
+      response.setHeader("content-type", "text/plain");
+      response.write('{\"Status\":\"Unsuccess\"}');
+      response.end();
+      
+    }
+    else{
+      if(result==null){
+        collection.insert({UserID:userID,Country:country,City:city},function(error,result){
+          if(error){
+                  utility.log("Error in Insert UserLocation : "+error,'ERROR');
+                  response.setHeader("content-type", "text/plain");
+                  response.write('{\"Status\":\"Unsuccess\"}');
+                  response.end();
+                  
+                }
+                else
+                {
+                  utility.log("Successfully Inserted UserLocation");
+                  response.setHeader("content-type", "text/plain");
+                  response.write('{\"Status\":\"Success\"}');
+                  response.end();
+                }
+        });
+      }
+      else
+      {
+        collection.update({UserID:userID},{$set:{Country:country,City:city}},function(error,result){
+          if(error){
+                  utility.log("Error in Update UserLocation : "+error,'ERROR');
+                  response.setHeader("content-type", "text/plain");
+                  response.write('{\"Status\":\"Unsuccess\"}');
+                  response.end();
+                  
+                }
+                else
+                {
+                  utility.log("Successfully Updated UserLocation");
+                  response.setHeader("content-type", "text/plain");
+                  response.write('{\"Status\":\"Success\"}');
+                  response.end();
+                }
+        });
+      }
+    }
+  });
+}
+
+function getMeetingToll(response,connection,meetingno,country){
   
   if(connection==null) {
       utility.log('database connection is null','ERROR');
@@ -1690,3 +1780,5 @@ exports.getPinOfInvitation=getPinOfInvitation;
 exports.updatePIN=updatePIN;
 exports.AuthenticateUser=AuthenticateUser;
 exports.getMeetingToll=getMeetingToll;
+exports.SaveUserLocation=SaveUserLocation;
+exports.getUserLocation=getUserLocation;

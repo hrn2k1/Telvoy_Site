@@ -24,7 +24,7 @@ function getUserLocation(response,connection,userID){
       response.end();
       return;
   }
-  var emptyLoc={"UserID":userID,"Country":"","City":""};
+   var emptyLoc={"UserID":userID,"Country":"","City":"","_id":""};
   var collection=connection.collection('UserLocation');
   collection.findOne({UserID:userID},function(error,result){
   if(error){

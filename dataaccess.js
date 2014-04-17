@@ -7,12 +7,17 @@ var utility=require('./utility.js');
  var BSON = require('mongodb').BSONPure;
 var fs = require('fs');
 
+function unSuccessJson(error){
+  var msg={"Status":"Unsuccess","Error":error};
+  return JSON.stringify(msg);
+}
+
 function getUserLocation(response,connection,userID){
 
    if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -21,7 +26,7 @@ function getUserLocation(response,connection,userID){
   if(error){
       utility.log("Error in find UserLocation : "+error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson(error));
       response.end();
       
     }
@@ -43,7 +48,7 @@ function SaveUserLocation(response,connection,userID,country,city){
    if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -52,7 +57,7 @@ function SaveUserLocation(response,connection,userID,country,city){
     if(error){
       utility.log("Error in find UserLocation : "+error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -62,7 +67,7 @@ function SaveUserLocation(response,connection,userID,country,city){
           if(error){
                   utility.log("Error in Insert UserLocation : "+error,'ERROR');
                   response.setHeader("content-type", "text/plain");
-                  response.write('{\"Status\":\"Unsuccess\"}');
+                  response.write( unSuccessJson(error));
                   response.end();
                   
                 }
@@ -81,7 +86,7 @@ function SaveUserLocation(response,connection,userID,country,city){
           if(error){
                   utility.log("Error in Update UserLocation : "+error,'ERROR');
                   response.setHeader("content-type", "text/plain");
-                  response.write('{\"Status\":\"Unsuccess\"}');
+                  response.write( unSuccessJson(error));
                   response.end();
                   
                 }
@@ -103,7 +108,7 @@ function getMeetingToll(response,connection,meetingno,country){
   if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -113,7 +118,7 @@ function getMeetingToll(response,connection,meetingno,country){
     if(error){
       utility.log("Error in find MeetingTolls : "+error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -134,7 +139,7 @@ function AuthenticateUser(response,connection,session,username,pass){
   if(connection==null) {
       utility.log('database connection is null.','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -178,7 +183,7 @@ function getRemainderTime(response,connection,userID)
 if(connection==null) {
       utility.log('database connection is null.','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -188,7 +193,7 @@ if(connection==null) {
     {
       utility.log("getRemainderTime() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -213,7 +218,7 @@ function setRemainder(response,connection,userID,remainder){
 if(connection==null) {
       utility.log('database connection eis null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -223,7 +228,7 @@ if(connection==null) {
         {
           utility.log("setRemainder() error: " + error,'ERROR');
           response.setHeader("content-type", "text/plain");
-          response.write('{\"Status\":\"Unsuccess\"}');
+          response.write( unSuccessJson(error));
           response.end();
           
         }
@@ -255,7 +260,7 @@ function insertPushURL(response,connection,url,userID){
 if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -265,7 +270,7 @@ if(connection==null) {
   {
     utility.log("getUser() error: " + error,'ERROR');
     response.setHeader("content-type", "text/plain");
-    response.write('{\"Status\":\"Unsuccess\"}');
+    response.write( unSuccessJson(error));
     response.end();
     
   }
@@ -279,7 +284,7 @@ if(connection==null) {
         {
           utility.log("insertPushURL() error: " + error,'ERROR');
           response.setHeader("content-type", "text/plain");
-          response.write('{\"Status\":\"Unsuccess\"}');
+          response.write( unSuccessJson(error));
           response.end();
           
         }
@@ -300,7 +305,7 @@ if(connection==null) {
         {
           utility.log("updateRegister() error: " + error,'ERROR');
           response.setHeader("content-type", "text/plain");
-          response.write('{\"Status\":\"Unsuccess\"}');
+          response.write( unSuccessJson(error));
           response.end();
           
         }
@@ -374,7 +379,7 @@ var invite_entity = {
 if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -384,7 +389,7 @@ if(connection==null) {
   {
     utility.log("insertCalendarEvent() error: " + error,'ERROR');
     response.setHeader("content-type", "text/plain");
-    response.write('{\"Status\":\"Unsuccess\"}');
+    response.write( unSuccessJson(error));
     response.end();
     
   }
@@ -439,7 +444,7 @@ function insertUser(response,connection,userID,deviceID,firstName,lastName,phone
   if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -449,7 +454,7 @@ function insertUser(response,connection,userID,deviceID,firstName,lastName,phone
     {
       utility.log("getUser() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -462,7 +467,7 @@ function insertUser(response,connection,userID,deviceID,firstName,lastName,phone
           {
             utility.log("insertUser() error: " + error,'ERROR');
             response.setHeader("content-type", "text/plain");
-            response.write('{\"Status\":\"Unsuccess\"}');
+            response.write( unSuccessJson(error));
             response.end();
             
           }
@@ -484,7 +489,7 @@ function insertUser(response,connection,userID,deviceID,firstName,lastName,phone
         {
           utility.log("updateUser() error: " + error,'ERROR');
           response.setHeader("content-type", "text/plain");
-          response.write('{\"Status\":\"Unsuccess\"}');
+          response.write( unSuccessJson(error));
           response.end();
           
         }
@@ -562,7 +567,7 @@ function VerifiedEmailAddress(response,connection,id,email){
   if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -574,7 +579,7 @@ function VerifiedEmailAddress(response,connection,id,email){
     {
       utility.log("VerifiedEmailAddress() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -638,7 +643,7 @@ function insertEmailAddress(response,connection,userID,emailID)
 if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -648,7 +653,7 @@ if(connection==null) {
     {
       utility.log("insertEmailAddress() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -680,7 +685,7 @@ function deleteEmailAddress(response,connection,userID,emailID)
  if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -690,7 +695,7 @@ function deleteEmailAddress(response,connection,userID,emailID)
     {
       utility.log("deleteEmail() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -717,7 +722,7 @@ function updateEmailAddress(response,connection,userID,oldEmailID,newEmailID)
    if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -727,7 +732,7 @@ function updateEmailAddress(response,connection,userID,oldEmailID,newEmailID)
     {
       utility.log("updateEmail() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -760,7 +765,7 @@ function getEmailAddresses(response,connection,userID)
   if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -770,7 +775,7 @@ function getEmailAddresses(response,connection,userID)
     {
       utility.log("getEmail() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"UnSuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -800,7 +805,7 @@ function insertCallLog(response,connection,userID,startTime,endTime,callNo)
 if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -810,7 +815,7 @@ if(connection==null) {
     {
       utility.log("insertCallLog() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -849,10 +854,11 @@ function getTollNo(response,connection,meetingno,area,city,dialInProvider)
   var where4 = {
     "MeetingID": meetingno
   };
+  var emptyNumber={"Number": ""};
 if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -864,7 +870,7 @@ if(connection==null) {
     {
       utility.log("getTollNo("+area+","+city+","+dialInProvider+")  error: " + error1,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(JSON.stringify(emptyNumber));
       response.end();
       
     }
@@ -886,7 +892,7 @@ if(connection==null) {
     {
       utility.log("getTollNo("+area+","+dialInProvider+") error: " + error2,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( JSON.stringify(emptyNumber));
       response.end();
       
     }
@@ -907,7 +913,7 @@ if(connection==null) {
               {
               utility.log("getTollNo("+meetingno+","+area+") error: " + error3,'ERROR');
               response.setHeader("content-type", "text/plain");
-              response.write('{\"Status\":\"Unsuccess\"}');
+              response.write(JSON.stringify(emptyNumber));
               response.end();
               
               }
@@ -929,7 +935,7 @@ if(connection==null) {
                     {
                     utility.log("getTollNo("+meetingno+") error: " + error4,'ERROR');
                     response.setHeader("content-type", "text/plain");
-                    response.write('{\"Status\":\"Unsuccess\"}');
+                    response.write(JSON.stringify(emptyNumber));
                     response.end();
                     
                     }
@@ -937,9 +943,19 @@ if(connection==null) {
                     {
                       utility.log("getTollNo("+meetingno+"): ");
                       utility.log(result4);
+                      if(result4 !=null)
+                      {
                        response.setHeader("content-type", "text/plain");
                         response.write(JSON.stringify(result4));
                         response.end();
+                      }
+                      else
+                      {
+                        utility.log("Toll not found");
+                        response.setHeader("content-type", "text/plain");
+                        response.write(JSON.stringify(emptyNumber));
+                        response.end();
+                      }
                         
                     }
                   });
@@ -964,7 +980,7 @@ function deleteDialInNumber(response,connection,id){
   if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -974,7 +990,7 @@ function deleteDialInNumber(response,connection,id){
     {
       utility.log("deleteDialInNumber() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -995,7 +1011,7 @@ function getDialInNumbers(response,connection)
   if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -1010,7 +1026,7 @@ function getDialInNumbers(response,connection)
       {
         utility.log("getDialInNumbers() error: " + error,'ERROR');
         response.setHeader("content-type", "text/plain");
-        response.write('{\"Status\":\"Unsuccess\"}');
+        response.write( unSuccessJson(error));
         response.end();
         
       }
@@ -1061,7 +1077,7 @@ function AddDialInNumbersAction(response,connection,area,city,number,dialInProvi
 if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -1100,7 +1116,7 @@ function getCreditBalance(response,connection,userID)
 if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -1110,7 +1126,7 @@ if(connection==null) {
     {
       utility.log("getCreditBalance() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -1133,7 +1149,7 @@ function deductCreditBalance(response,connection,userID){
   if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -1143,7 +1159,7 @@ function deductCreditBalance(response,connection,userID){
     {
       utility.log("User Credit FindOne() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -1161,7 +1177,7 @@ function deductCreditBalance(response,connection,userID){
     {
       utility.log("deductCreditBalance() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -1189,7 +1205,7 @@ function getPinlessInvitation(response,connection){
   if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -1202,7 +1218,7 @@ function getPinlessInvitation(response,connection){
           {
             utility.log("Pinless Invitations find error: " + error,'ERROR');
             response.setHeader("content-type", "text/plain");
-            response.write('{\"Status\":\"Unsuccess\"}');
+            response.write( unSuccessJson(error));
             response.end();
             
           }
@@ -1228,7 +1244,7 @@ function getPinOfInvitation(response,connection,code){
   if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -1240,7 +1256,7 @@ function getPinOfInvitation(response,connection,code){
           {
             utility.log("Get Invitations find by AccessCode error: " + error,'ERROR');
             response.setHeader("content-type", "text/plain");
-            response.write('{\"Status\":\"Unsuccess\"}');
+            response.write( unSuccessJson(error));
             response.end();
             
           }
@@ -1263,7 +1279,7 @@ function getPinOfInvitation(response,connection,code){
             {
              utility.log("Get Invitations find by AccessCode: Not found for AccessCode " + code);
             response.setHeader("content-type", "text/plain");
-            response.write('{\"Status\":\"Unsuccess\"}');
+            response.write( unSuccessJson("Invitation not found for AccessCode"+code));
             response.end();
             
             }
@@ -1279,7 +1295,7 @@ function updatePIN(response,connection,id,pin){
  if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write(unSuccessJson("Database Connection Failed."));
       response.end();
       return;
   }
@@ -1289,7 +1305,7 @@ function updatePIN(response,connection,id,pin){
     {
       utility.log("updatePIN() error: " + error,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Unsuccess\"}');
+      response.write( unSuccessJson(error));
       response.end();
       
     }
@@ -1312,7 +1328,7 @@ function getInvitations(response,connection,userID,id){
  if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      //response.write('{\"Status\":\"Unsuccess\"}');
+      //response.write(unSuccessJson("Database Connection Failed."));
       response.write('{\"invitations\":[]}');
       response.end();
       return;
@@ -1325,7 +1341,7 @@ function getInvitations(response,connection,userID,id){
           {
             utility.log("Invitations find error: " + error,'ERROR');
             response.setHeader("content-type", "text/plain");
-            response.write('{\"Status\":\"Unsuccess\"}');
+            response.write( unSuccessJson(error));
             response.end();
             
           }
@@ -1352,7 +1368,7 @@ function getInvitations_back(response,connection,userID,id){
  if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      //response.write('{\"Status\":\"Unsuccess\"}');
+      //response.write(unSuccessJson("Database Connection Failed."));
       response.write('{\"invitations\":[]}');
       response.end();
       return;
@@ -1366,7 +1382,7 @@ function getInvitations_back(response,connection,userID,id){
       {
         utility.log("Invitees find error: " + error,'ERROR');
         response.setHeader("content-type", "text/plain");
-        response.write('{\"Status\":\"Unsuccess\"}');
+        response.write( unSuccessJson(error));
         response.end();
         
       }
@@ -1386,7 +1402,7 @@ function getInvitations_back(response,connection,userID,id){
           {
             utility.log("Invitations find error: " + error,'ERROR');
             response.setHeader("content-type", "text/plain");
-            response.write('{\"Status\":\"Unsuccess\"}');
+            response.write( unSuccessJson(error));
             response.end();
             
           }

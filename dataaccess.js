@@ -11,7 +11,10 @@ function unSuccessJson(error){
   var msg={"Status":"Unsuccess","Error":error};
   return JSON.stringify(msg);
 }
-
+function SuccessJson(){
+  var msg={"Status":"Success","Error":""};
+  return JSON.stringify(msg);
+}
 function getUserLocation(response,connection,userID){
 
    if(connection==null) {
@@ -21,6 +24,7 @@ function getUserLocation(response,connection,userID){
       response.end();
       return;
   }
+  var emptyLoc={"UserID":userID,"Country":"","City":""};
   var collection=connection.collection('UserLocation');
   collection.findOne({UserID:userID},function(error,result){
   if(error){
@@ -34,9 +38,16 @@ function getUserLocation(response,connection,userID){
 
        utility.log('UserLocation for UserID: '+userID);
        utility.log(result);
+       if(result==null){
+        response.setHeader("content-type", "text/plain");
+        response.write(JSON.stringify(emptyLoc));
+        response.end();
+       }
+       else{
       response.setHeader("content-type", "text/plain");
       response.write(JSON.stringify(result));
       response.end();
+    }
     }
 
   });
@@ -75,7 +86,7 @@ function SaveUserLocation(response,connection,userID,country,city){
                 {
                   utility.log("Successfully Inserted UserLocation");
                   response.setHeader("content-type", "text/plain");
-                  response.write('{\"Status\":\"Success\"}');
+                  response.write(SuccessJson());
                   response.end();
                 }
         });
@@ -94,7 +105,7 @@ function SaveUserLocation(response,connection,userID,country,city){
                 {
                   utility.log("Successfully Updated UserLocation");
                   response.setHeader("content-type", "text/plain");
-                  response.write('{\"Status\":\"Success\"}');
+                  response.write(SuccessJson());
                   response.end();
                 }
         });
@@ -156,7 +167,7 @@ function AuthenticateUser(response,connection,session,username,pass){
             session.set('username',username);
             utility.log("AuthenticateUser OK.");
             response.setHeader("content-type", "application/json");
-            response.write('{\"Status\":\"Success\"}');
+            response.write(SuccessJson());
             response.end();
           }
           else{
@@ -236,7 +247,7 @@ if(connection==null) {
         {
           utility.log("Set Remainder Successfully");
           response.setHeader("content-type", "text/plain");
-          response.write('{\"Status\":\"Success\"}');
+          response.write(SuccessJson());
           response.end();
           
         }
@@ -292,7 +303,7 @@ if(connection==null) {
         {
           utility.log("Push URL inserted Successfully");
           response.setHeader("content-type", "text/plain");
-          response.write('{\"Status\":\"Success\"}');
+          response.write(SuccessJson());
           response.end();
           
         }
@@ -313,7 +324,7 @@ if(connection==null) {
         {
           utility.log("Push URL Updated Successfully");
           response.setHeader("content-type", "text/plain");
-          response.write('{\"Status\":\"Success\"}');
+          response.write(SuccessJson());
           response.end();
           
         }
@@ -398,7 +409,7 @@ if(connection==null) {
 
     utility.log("Calendar Event inserted Successfully");
     response.setHeader("content-type", "text/plain");
-    response.write('{\"Status\":\"Success\"}');
+    response.write(SuccessJson());
     response.end();
     
      insertInvitationEntity(invite_entity,addresses,out['tolls']);
@@ -476,7 +487,7 @@ function insertUser(response,connection,userID,deviceID,firstName,lastName,phone
             AddMasterEmail(connection,userID,userID);
             utility.log("Invitation inserted Successfully");
             response.setHeader("content-type", "text/plain");
-            response.write('{\"Status\":\"Success\"}');
+            response.write(SuccessJson());
             response.end();
             
           }
@@ -498,7 +509,7 @@ function insertUser(response,connection,userID,deviceID,firstName,lastName,phone
           AddMasterEmail(connection,userID,userID);
           utility.log("User Updated Successfully");
           response.setHeader("content-type", "text/plain");
-          response.write('{\"Status\":\"Success\"}');
+          response.write(SuccessJson());
           response.end();
           
         }
@@ -664,7 +675,7 @@ if(connection==null) {
       SendConfirmationEmail(result[0]._id,result[0].EmailID);
 
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Success\"}');
+      response.write(SuccessJson());
       response.end();
       
     }
@@ -703,7 +714,7 @@ function deleteEmailAddress(response,connection,userID,emailID)
     {
       utility.log("Email Address deleted Successfully");
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Success\"}');
+      response.write(SuccessJson());
       response.end();
       
     }
@@ -747,7 +758,7 @@ function updateEmailAddress(response,connection,userID,oldEmailID,newEmailID)
       
 
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Success\"}');
+      response.write(SuccessJson());
       response.end();
       
     }
@@ -823,7 +834,7 @@ if(connection==null) {
     {
       utility.log("CallLog inserted Successfully");
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Success\"}');
+      response.write(SuccessJson());
       response.end();
       
     }
@@ -1185,7 +1196,7 @@ function deductCreditBalance(response,connection,userID){
     {
       utility.log("UserCredits updated Successfully");
       response.setHeader("content-type", "text/plain");
-      response.write('{\"Status\":\"Success\"}');
+      response.write(SuccessJson());
       response.end();
       
     }

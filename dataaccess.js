@@ -854,7 +854,7 @@ function getTollNo(response,connection,meetingno,area,city,dialInProvider)
   var where4 = {
     "MeetingID": meetingno
   };
-  var emptyNumber={"Area":area,"City":city,"Number": "","Provider":dialInProvider};
+  var emptyNumber={"_id":"","Area":area,"City":city,"Number": "","Provider":dialInProvider};
 if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");

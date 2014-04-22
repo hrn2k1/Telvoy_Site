@@ -7,14 +7,40 @@ var utility=require('./utility.js');
  var BSON = require('mongodb').BSONPure;
 var fs = require('fs');
 
+function CreateGeneralResponse(Status,StatusCode,ErrorCode,ErrorMsg,SecCode,DataObj)
+{
+  var Obj={
+  "status": Status,
+  "status_code":StatusCode,
+  "error_code":ErrorCode,
+  "error_message":ErrorMsg,
+  "security_code":SecCode,
+  "data":DataObj
+  };
+  return JSON.stringify(Obj);
+}
+
 function unSuccessJson(error){
-  var msg={"Status":"Unsuccess","Error":error};
-  return JSON.stringify(msg);
+  // var msg={"Status":"Unsuccess","Error":error};
+  // return JSON.stringify(msg);
+
+  return CreateGeneralResponse(false,'100','500',error,'',[]);
 }
 function SuccessJson(){
-  var msg={"Status":"Success","Error":""};
-  return JSON.stringify(msg);
+  // var msg={"Status":"Success","Error":""};
+  // return JSON.stringify(msg);
+
+  return CreateGeneralResponse(true,'200','','','',[]);
 }
+function SuccessJsonWithObjects(DataObjs){
+  return CreateGeneralResponse(true,'200','','','',DataObjs);
+}
+function SuccessJsonWithSingleObject(DataObj){
+  var DataObjs=[];
+  DataObjs.push(DataObj);
+  return CreateGeneralResponse(true,'200','','','',DataObjs);
+}
+
 function getUserLocation(response,connection,userID){
 
    if(connection==null) {
@@ -24,7 +50,7 @@ function getUserLocation(response,connection,userID){
       response.end();
       return;
   }
-   var emptyLoc={"UserID":userID,"Country":"","City":"","_id":""};
+  var emptyLoc={"UserID":userID,"Country":"","City":"","_id":""};
   var collection=connection.collection('UserLocation');
   collection.findOne({UserID:userID},function(error,result){
   if(error){
@@ -40,12 +66,13 @@ function getUserLocation(response,connection,userID){
        utility.log(result);
        if(result==null){
         response.setHeader("content-type", "text/plain");
-        response.write(JSON.stringify(emptyLoc));
+        //response.write(JSON.stringify(emptyLoc));
+        response.write(SuccessJsonWithSingleObject(emptyLoc));
         response.end();
        }
        else{
       response.setHeader("content-type", "text/plain");
-      response.write(JSON.stringify(result));
+      response.write(SuccessJsonWithSingleObject(result));
       response.end();
     }
     }
@@ -137,7 +164,7 @@ function getMeetingToll(response,connection,meetingno,country){
       utility.log('Meeting Toll for MeetingID: '+meetingno+' and country: '+country);
       console.log(result);
       response.setHeader("content-type", "text/plain");
-      response.write(JSON.stringify(result));
+      response.write(SuccessJsonWithSingleObject(result));
       response.end();
       
     }
@@ -212,7 +239,8 @@ if(connection==null) {
     {
       utility.log(result);
       response.setHeader("content-type", "text/plain");
-      response.write(JSON.stringify(result));
+      //response.write(JSON.stringify(result));
+       response.write(SuccessJsonWithSingleObject(result));
       response.end();
       
     }
@@ -794,7 +822,8 @@ function getEmailAddresses(response,connection,userID)
     {
       utility.debug(result);
       response.setHeader("content-type", "text/plain");
-      response.write("{\"Emails\":" + JSON.stringify(result) + "}");
+      //response.write("{\"Emails\":" + JSON.stringify(result) + "}");
+       response.write(SuccessJsonWithObjects(result));
       response.end();
       
     }
@@ -881,7 +910,8 @@ if(connection==null) {
     {
       utility.log("getTollNo("+area+","+city+","+dialInProvider+")  error: " + error1,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write(JSON.stringify(emptyNumber));
+      //response.write(JSON.stringify(emptyNumber));
+       response.write(SuccessJsonWithSingleObject(emptyNumber));
       response.end();
       
     }
@@ -891,7 +921,8 @@ if(connection==null) {
       utility.log(result1);
       if(result1 !=null){
         response.setHeader("content-type", "text/plain");
-        response.write(JSON.stringify(result1));
+        //response.write(JSON.stringify(result1));
+        response.write(SuccessJsonWithSingleObject(result1));
         response.end();
         
     }
@@ -903,7 +934,8 @@ if(connection==null) {
     {
       utility.log("getTollNo("+area+","+dialInProvider+") error: " + error2,'ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write( JSON.stringify(emptyNumber));
+      //response.write( JSON.stringify(emptyNumber));
+      response.write(SuccessJsonWithSingleObject(emptyNumber));
       response.end();
       
     }
@@ -913,7 +945,8 @@ if(connection==null) {
         console.log(result2);
         if(result2 !=null){
         response.setHeader("content-type", "text/plain");
-        response.write(JSON.stringify(result2));
+        //response.write(JSON.stringify(result2));
+        response.write(SuccessJsonWithSingleObject(result2));
         response.end();
         
       }
@@ -924,7 +957,8 @@ if(connection==null) {
               {
               utility.log("getTollNo("+meetingno+","+area+") error: " + error3,'ERROR');
               response.setHeader("content-type", "text/plain");
-              response.write(JSON.stringify(emptyNumber));
+              //response.write(JSON.stringify(emptyNumber));
+              response.write(SuccessJsonWithSingleObject(emptyNumber));
               response.end();
               
               }
@@ -934,7 +968,8 @@ if(connection==null) {
                 if(result3 !=null)
                 {
                 response.setHeader("content-type", "text/plain");
-                response.write(JSON.stringify(result3));
+                //response.write(JSON.stringify(result3));
+                response.write(SuccessJsonWithSingleObject(result3));
                 response.end();
                 
                 }
@@ -946,7 +981,8 @@ if(connection==null) {
                     {
                     utility.log("getTollNo("+meetingno+") error: " + error4,'ERROR');
                     response.setHeader("content-type", "text/plain");
-                    response.write(JSON.stringify(emptyNumber));
+                    //response.write(JSON.stringify(emptyNumber));
+                    response.write(SuccessJsonWithSingleObject(emptyNumber));
                     response.end();
                     
                     }
@@ -957,14 +993,16 @@ if(connection==null) {
                       if(result4 !=null)
                       {
                        response.setHeader("content-type", "text/plain");
-                        response.write(JSON.stringify(result4));
+                        //response.write(JSON.stringify(result4));
+                        response.write(SuccessJsonWithSingleObject(result4));
                         response.end();
                       }
                       else
                       {
                         utility.log("Toll not found");
                         response.setHeader("content-type", "text/plain");
-                        response.write(JSON.stringify(emptyNumber));
+                        //response.write(JSON.stringify(emptyNumber));
+                        response.write(SuccessJsonWithSingleObject(emptyNumber));
                         response.end();
                       }
                         
@@ -1145,7 +1183,8 @@ if(connection==null) {
     {
       utility.debug(result);
       response.setHeader("content-type", "text/plain");
-      response.write(JSON.stringify(result));
+      //response.write(JSON.stringify(result));
+      response.write(SuccessJsonWithSingleObject(result));
       response.end();
       
     }
@@ -1339,8 +1378,8 @@ function getInvitations(response,connection,userID,id){
  if(connection==null) {
       utility.log('database connection is null','ERROR');
       response.setHeader("content-type", "text/plain");
-      //response.write(unSuccessJson("Database Connection Failed."));
-      response.write('{\"invitations\":[]}');
+      //response.write('{\"invitations\":[]}');
+      response.write(SuccessJsonWithObjects([]));
       response.end();
       return;
   }
@@ -1360,7 +1399,8 @@ function getInvitations(response,connection,userID,id){
           {
             utility.log(result);
             response.setHeader("content-type", "text/plain");
-            response.write("{\"invitations\":"+JSON.stringify(result)+"}");
+            //response.write("{\"invitations\":"+JSON.stringify(result)+"}");
+            response.write(SuccessJsonWithObjects(result));
             response.end();
             
           }

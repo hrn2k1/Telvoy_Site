@@ -171,6 +171,224 @@ function getMeetingToll(response,connection,meetingno,country){
   });
 
 }
+function InsertMeetingTolls(connection,localtolls){
+  if(localtolls=='undefined') return;
+  if(localtolls==null) return;
+  if(localtolls.length==0) return;
+
+  utility.debug("Meeting Tolls to insert");
+  utility.debug(localtolls);
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
+      
+      return;
+  }
+      var Tolls = connection.collection('MeetingTolls');
+      Tolls.insert(localtolls,function(err,rslt){
+          if(err){
+            utility.log('Insert MeetingTolls Error: '+err,'ERROR');
+            
+          }
+          else{
+            utility.log("Successfully Inserted "+localtolls.length+" Meeting Tolls.");
+            
+          }
+      });
+      
+ 
+}
+
+function SendToastNotification(connection,userID,boldText,normalText,callback){
+  if(connection==null) {
+      utility.log('database connection is null','ERROR');
+      return;
+  }
+  var Registrations = connection.collection('Registrations');
+      Registrations.findOne({UserID: userID.trim()}, function(error, registration) {
+                  if(error)
+                  {
+                    utility.log("find registration error: " + error, 'ERROR');
+                  }
+                  else
+                  {
+                    if(debug==true)
+                    {
+                    utility.log('Invitees Push URL Info for sending Toast' );
+                    utility.log(registration);
+                    }
+                    if(registration != null)
+                    {
+                      var pushUri=registration.Handle;
+                       mpns.sendToast(pushUri,boldText,normalText,function(error,result){
+                        if(error){
+                          utility.log("Can't Send Toast to User "+userID+" Error: "+error); 
+                        }
+                        else{
+                           utility.log('Successfully Sent Toast to User '+userID+' and result ');
+                           utility.log(result); 
+                        }
+                        if(callback !=null)
+                          callback(error,result);
+                    });
+                    }
+                  }
+                });
+
+
+
+}
+
+/*Recurssive Method to handle Invitees. 
+Due to IO non-blocking feature of Node.js normal looping is not applicable here*/
+function ProcessInvitees(dbConnection,addresses,callback){
+
+  if(dbConnection==null) {
+      utility.log('database connection is null','ERROR');
+     
+      return;
+  }
+  var Atts=[];
+  var EmailAddresses = dbConnection.collection('EmailAddresses');
+  addresses.forEach(function(addr,j){
+
+      EmailAddresses.findOne({EmailID: addr.address,Verified:true}, function(error, result1){
+                    if(!error){
+                      if(result1==null){
+                        utility.log(addr.address+' not found in white list');
+                          //send email
+                        mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,addr.address);
+                        if(j+1==addresses.length)
+                         {
+                          if(callback !=null) callback(null,Atts);
+                         }
+                        }
+                      else{
+                         Atts.push( {"UserID": result1.UserID,"EmailID": result1.EmailID} );
+                          //console.log(j,Atts);
+                         mailer.sendMail(config.ATTENDEE_EMAIL_SUBJECT,config.ATTENDEE_EMAIL_BODY,result1.EmailID);
+                         utility.log('Parsed Success email sent to '+result1.EmailID);
+                         SendToastNotification(dbConnection,result1.UserID,config.ATTENDEE_EMAIL_SUBJECT,config.ATTENDEE_EMAIL_BODY,null);
+                         if(j+1==addresses.length)
+                         {
+                          if(callback !=null) callback(null,Atts);
+                         }
+                      }
+                    }
+                      else{
+                        if(callback !=null) callback(error,null);
+                      }
+                });
+});
+
+
+}
+
+
+
+
+function insertInvitationEntity(connection,entity,addresses,localtolls)
+{
+  //console.log(entity.InvTime,entity.EndTime);
+  if(entity.EndTime=="" || entity.EndTime==null || entity.EndTime=="undefined"){ 
+  entity.EndTime= addMinutes(entity.InvTime,60); 
+  utility.log("Empty EndTime. and added 1 hr to InvTime: ",entity.EndTime);
+}
+
+   if(localtolls!=null && localtolls.length>0){
+    for (var i = 0; i < localtolls.length; i++) {
+      localtolls[i].MeetingID=entity.AccessCode;
+    };
+   }
+
+if(connection==null) {
+      utility.log('database connection is null','ERROR');
+     
+      return;
+  }
+  var Invitations = connection.collection('Invitations');
+  var EmailAddresses = connection.collection('EmailAddresses');
+
+ EmailAddresses.findOne({"EmailID":entity.Forwarder,"Verified":true},function(senderError,sender){
+ if(senderError){
+  utility.log('Error in finding sender email in whitelist','ERROR');
+  return;
+ }
+ else{
+  if(sender==null){
+    utility.log('Sender(Forwarder) Email address '+ entity.Forwarder +' is not found in whitelist.');
+     mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,entity.Forwarder);
+    return;
+  }
+  else{
+    utility.log('Sender(Forwarder) Email '+entity.Forwarder+' is found in whitelist with userID '+sender.UserID);
+    //////////////////////Start Invitation Process/////////////
+    ProcessInvitees(connection,addresses,function(error,addrs){
+      if(error){
+        utility.log('ProcessInvitees error: '+error);
+      }
+      else{
+        utility.log('Allowed Attendees...');
+        utility.log(addrs);
+        entity.Attendees=addrs;
+
+        Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
+    if(error){
+      utility.log("Error in find invitation with AccessCode to check duplicate" + error,'ERROR');
+        
+    } else{
+      //console.log("Invitation  found nor" + result_invite);
+        if(result_invite == null){
+         Invitations.insert(entity, function(error, result) {
+          if(error)
+          {
+            utility.log("insertInvitationEntity() error: " + error, 'ERROR');
+             
+          }
+          else
+          {
+            utility.log('insert invitation result.........');
+            utility.log(result);
+            utility.log("Invitation inserted Successfully");
+            
+          }
+        });
+      }
+      else{
+        utility.log("Invitation already exist for AccessCode: "+result_invite.AccessCode);
+        Invitations.update({"_id":result_invite._id}, {$set:entity}, function(error,result){
+          if(error)
+          {
+            utility.log("update error in insertInvitationEntity() error: " + error, 'ERROR');
+             
+          }
+          else
+          {
+            utility.log('update invitation result.........');
+            utility.log(result);
+            utility.log("Invitation updated Successfully");
+            
+          }
+        });
+      }
+    }
+  });
+
+
+      }
+
+    });
+    
+
+    //////////////////////End Invitation Process//////////////
+  }
+ }
+
+ });
+  
+
+
+}
+
 
 function AuthenticateUser(response,connection,session,username,pass){
  
@@ -1526,176 +1744,7 @@ else{
 
 
 
-function InsertMeetingTolls(connection,localtolls){
-  if(localtolls=='undefined') return;
-  if(localtolls==null) return;
-  if(localtolls.length==0) return;
 
-  utility.debug("Meeting Tolls to insert");
-  utility.debug(localtolls);
-  if(connection==null) {
-      utility.log('database connection is null','ERROR');
-      
-      return;
-  }
-      var Tolls = connection.collection('MeetingTolls');
-      Tolls.insert(localtolls,function(err,rslt){
-          if(err){
-            utility.log('Insert MeetingTolls Error: '+err,'ERROR');
-            
-          }
-          else{
-            utility.log("Successfully Inserted "+localtolls.length+" Meeting Tolls.");
-            
-          }
-      });
-      
- 
-}
-function ProcessInvitees(dbConnection,addresses,callback){
-
-  if(dbConnection==null) {
-      utility.log('database connection is null','ERROR');
-     
-      return;
-  }
-  var Atts=[];
-  var EmailAddresses = dbConnection.collection('EmailAddresses');
-  addresses.forEach(function(addr,j){
-
-      EmailAddresses.findOne({EmailID: addr.address,Verified:true}, function(error, result1){
-                    if(!error){
-                      if(result1==null){
-                        utility.log(addr.address+' not found in white list');
-                          //send email
-                        mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,addr.address);
-                        if(j+1==addresses.length)
-                         {
-                          if(callback !=null) callback(null,Atts);
-                         }
-                        }
-                      else{
-                         Atts.push( {"UserID": result1.UserID,"EmailID": result1.EmailID} );
-                          //console.log(j,Atts);
-                         mailer.sendMail(config.ATTENDEE_EMAIL_SUBJECT,config.ATTENDEE_EMAIL_BODY,result1.EmailID);
-                         utility.log('Parsed Success email sent to '+result1.EmailID);
-                         if(j+1==addresses.length)
-                         {
-                          if(callback !=null) callback(null,Atts);
-                         }
-                      }
-                    }
-                      else{
-                        if(callback !=null) callback(error,null);
-                      }
-                });
-});
-
-
-}
-
-function insertInvitationEntity(connection,entity,addresses,localtolls)
-{
-  //console.log(entity.InvTime,entity.EndTime);
-  if(entity.EndTime=="" || entity.EndTime==null || entity.EndTime=="undefined"){ 
-  entity.EndTime= addMinutes(entity.InvTime,60); 
-  utility.log("Empty EndTime. and added 1 hr to InvTime: ",entity.EndTime);
-}
-
-   if(localtolls!=null && localtolls.length>0){
-    for (var i = 0; i < localtolls.length; i++) {
-      localtolls[i].MeetingID=entity.AccessCode;
-    };
-   }
-
-if(connection==null) {
-      utility.log('database connection is null','ERROR');
-     
-      return;
-  }
-  var Invitations = connection.collection('Invitations');
-  var EmailAddresses = connection.collection('EmailAddresses');
-
- EmailAddresses.findOne({"EmailID":entity.Forwarder,"Verified":true},function(senderError,sender){
- if(senderError){
-  utility.log('Error in finding sender email in whitelist','ERROR');
-  return;
- }
- else{
-  if(sender==null){
-    utility.log('Sender(Forwarder) Email address '+ entity.Forwarder +' is not found in whitelist.');
-     mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,entity.Forwarder);
-    return;
-  }
-  else{
-    utility.log('Sender(Forwarder) Email '+entity.Forwarder+' is found in whitelist with userID '+sender.UserID);
-    //////////////////////Start Invitation Process/////////////
-    ProcessInvitees(connection,addresses,function(error,addrs){
-      if(error){
-        utility.log('ProcessInvitees error: '+error);
-      }
-      else{
-        utility.log('Allowed Attendees...');
-        utility.log(addrs);
-        entity.Attendees=addrs;
-
-        Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
-    if(error){
-      utility.log("Error in find invitation with AccessCode to check duplicate" + error,'ERROR');
-        
-    } else{
-      //console.log("Invitation  found nor" + result_invite);
-        if(result_invite == null){
-         Invitations.insert(entity, function(error, result) {
-          if(error)
-          {
-            utility.log("insertInvitationEntity() error: " + error, 'ERROR');
-             
-          }
-          else
-          {
-            utility.log('insert invitation result.........');
-            utility.log(result);
-            utility.log("Invitation inserted Successfully");
-            
-          }
-        });
-      }
-      else{
-        utility.log("Invitation already exist for AccessCode: "+result_invite.AccessCode);
-        Invitations.update({"_id":result_invite._id}, {$set:entity}, function(error,result){
-          if(error)
-          {
-            utility.log("update error in insertInvitationEntity() error: " + error, 'ERROR');
-             
-          }
-          else
-          {
-            utility.log('update invitation result.........');
-            utility.log(result);
-            utility.log("Invitation updated Successfully");
-            
-          }
-        });
-      }
-    }
-  });
-
-
-      }
-
-    });
-    
-
-    //////////////////////End Invitation Process//////////////
-  }
- }
-
- });
-  
-
-
-}
 
 function insertInvitationEntity_back(connection,entity,addresses,localtolls)
 {

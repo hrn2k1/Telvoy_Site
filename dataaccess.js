@@ -6,6 +6,7 @@ var utility=require('./utility.js');
  var mimelib = require("mimelib-noiconv");
  var BSON = require('mongodb').BSONPure;
 var fs = require('fs');
+var debug = config.IS_DEBUG_MODE;
 
 function CreateGeneralResponse(Status,StatusCode,ErrorCode,ErrorMsg,SecCode,DataObj)
 {

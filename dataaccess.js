@@ -177,7 +177,7 @@ function AuthenticateUser(response,connection,session,username,pass){
   if(connection==null) {
       utility.log('database connection is null.','ERROR');
       response.setHeader("content-type", "text/plain");
-      response.write(unSuccessJson("Database Connection Failed."));
+      response.write('{\"Status\":\"Internal Server Error. Please try again.\"}');
       response.end();
       return;
   }
@@ -194,7 +194,7 @@ function AuthenticateUser(response,connection,session,username,pass){
             session.set('username',username);
             utility.log("AuthenticateUser OK.");
             response.setHeader("content-type", "application/json");
-            response.write(SuccessJson());
+            response.write('{\"Status\":\"Success\"}');
             response.end();
           }
           else{

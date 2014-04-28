@@ -212,20 +212,21 @@ function SendToastNotification(connection,userID,boldText,normalText,callback){
                   }
                   else
                   {
-                    if(debug==true)
-                    {
-                    utility.log('Invitees Push URL Info for sending Toast' );
+                    // if(debug==true)
+                    // {
+                    utility.log('Invitees Push URL Info for sending Toast. User: '+userID );
                     utility.log(registration);
-                    }
+                    // }
                     if(registration != null)
                     {
                       var pushUri=registration.Handle;
                        mpns.sendToast(pushUri,boldText,normalText,function(error,result){
                         if(error){
-                          utility.log("Can't Send Toast to User "+userID+" Error: "+error); 
+                          utility.log("Can't Send Toast to User "+userID+" Error:"); 
+                          utility.log(error);
                         }
                         else{
-                           utility.log('Successfully Sent Toast to User '+userID+' and result ');
+                           utility.log('Successfully Sent Toast to User '+userID+' and result:');
                            utility.log(result); 
                         }
                         if(callback !=null)

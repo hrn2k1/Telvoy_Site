@@ -660,7 +660,7 @@ if(connection==null) {
     response.write(SuccessJson());
     response.end();
     
-     insertInvitationEntity(invite_entity,addresses,out['tolls']);
+     insertInvitationEntity(connection, invite_entity,addresses,out['tolls']);
   }
 });
 

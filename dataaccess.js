@@ -251,8 +251,6 @@ function ProcessInvitees(dbConnection,addresses,callback){
   var EmailAddresses = dbConnection.collection('EmailAddresses');
   
   addresses.forEach(function(addr,j){
-      utility.log("*****YYY*****");
-      utility.log(addr);
 
       EmailAddresses.findOne({EmailID:addr, Verified:true}, function(error, result1){
                     if(!error){
@@ -332,15 +330,19 @@ if(connection==null) {
         utility.log('ProcessInvitees error: ' + error);
       }
       else{
+        utility.log("*****YYY*****");
+        utility.log(entity);
+        
         utility.log('Allowed Attendees...');
         utility.log(addrs);
+        
         entity.Attendees=addrs;
 
         Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
-    if(error){
-      utility.log("Error in find invitation with AccessCode to check duplicate" + error,'ERROR');
-        
-    } else{
+        if(error){
+          utility.log("Error in find invitation with AccessCode to check duplicate" + error,'ERROR');
+            
+        } else{
       //console.log("Invitation  found nor" + result_invite);
         if(result_invite == null){
          Invitations.insert(entity, function(error, result) {
@@ -353,7 +355,6 @@ if(connection==null) {
             utility.log('insert invitation result.........');
             utility.log(result);
             utility.log("Invitation inserted Successfully");
-            
           }
         });
       }
@@ -363,7 +364,6 @@ if(connection==null) {
           if(error)
           {
             utility.log("update error in insertInvitationEntity() error: " + error, 'ERROR');
-             
           }
           else
           {

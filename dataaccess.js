@@ -325,13 +325,13 @@ if(connection==null) {
     
     var addresses = entity.ToEmails;
     
-    ProcessInvitees(connection,addresses,function(error,addrs){
-      if(error){
-        utility.log('ProcessInvitees error: ' + error);
-      }
-      else{
-        utility.log("*****YYY*****");
-        utility.log(entity);
+    // ProcessInvitees(connection,addresses,function(error,addrs){
+    //   if(error){
+    //     utility.log('ProcessInvitees error: ' + error);
+    //   }
+    //   else{
+    //     utility.log("*****YYY*****");
+    //     utility.log(entity);
         
         utility.log('Allowed Attendees...');
         utility.log(addrs);
@@ -378,9 +378,9 @@ if(connection==null) {
   });
 
 
-      }
+    //   }
 
-    });
+    // });
     
 
     //////////////////////End Invitation Process//////////////

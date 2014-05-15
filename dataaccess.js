@@ -527,16 +527,33 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                         // utility.log('Allowed Attendees...');
                         // utility.log(addrs);
                         // entity.Attendees = addresses;
-                        utility.log("entity.AccessCode");
-                        utility.log(entity.AccessCode);
+                        // utility.log("entity.AccessCode");
+                        // utility.log(entity.AccessCode);
 
-                        Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
+                        var invite_entity = {
+                            ToEmails : "mmnitol@outlook.com,aazaman00@outlook.com",
+                            Forwarder: "ahmed@nordicsoft.com.bd",
+                            FromEmail: "ahmed@nordicsoft.com.bd",
+                            InvDate : "15/5/2014 07:00:00 GMT+0600 (Bangladesh Standard Time)",
+                            InvTime : "15/5/2014 19:30:00 GMT+0600 (Bangladesh Standard Time)",
+                            EndTime: "15/5/2014 20:00:00 GMT+0600 (Bangladesh Standard Time)",
+                            Subject: "5 min reminder again 1",
+                            Toll: "",
+                            PIN: "",
+                            AccessCode: "100 100 000",
+                            Password: "",
+                            DialInProvider: "",
+                            TimeStamp: new Date(),
+                            Agenda: "",
+                            MessageID: ""
+                        };
+                        Invitations.findOne({"AccessCode": invite_entity.AccessCode}, function(error, result_invite){
                         if(error){
                             utility.log("Error in find invitation with AccessCode to check duplicate" + error,'ERROR');
                         } else{
-                        console.log("Invitation found nor" + result_invite);
+                            console.log("Invitation found nor" + result_invite);
                             if(result_invite == null){
-                                Invitations.insert(entity, function(error, result) {
+                                Invitations.insert(invite_entity, function(error, result) {
                                     if(error)
                                     {
                                         utility.log("insertInvitationEntity() error: " + error, 'ERROR');
@@ -551,7 +568,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                             }
                             else{
                                 utility.log("Invitation already exist for AccessCode: "+result_invite.AccessCode);
-                                Invitations.update({"_id":result_invite._id}, {$set:entity}, function(error,result){
+                                Invitations.update({"_id":result_invite._id}, {$set:invite_entity}, function(error,result){
                                     if(error)
                                     {
                                         utility.log("update error in insertInvitationEntity() error: " + error, 'ERROR');

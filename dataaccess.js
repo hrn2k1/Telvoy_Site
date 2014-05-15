@@ -501,8 +501,6 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
     }
     var Invitations = connection.collection('Invitations');
     var EmailAddresses = connection.collection('EmailAddresses');
-    utility.log("entity.Forwarder");
-    utility.log(entity.Forwarder);
 
     EmailAddresses.findOne({"EmailID":entity.Forwarder, "Verified":true},function(senderError,sender){
         if(senderError){
@@ -529,6 +527,8 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                         utility.log('Allowed Attendees...');
                         utility.log(addrs);
                         // entity.Attendees = addresses;
+                        utility.log("entity.AccessCode");
+                        utility.log(entity.AccessCode);
 
                         Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
                         if(error){

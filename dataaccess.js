@@ -524,8 +524,8 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                 //         utility.log('ProcessInvitees error: ' + error);
                 //     }
                 //     else{
-                        utility.log('Allowed Attendees...');
-                        utility.log(addrs);
+                        // utility.log('Allowed Attendees...');
+                        // utility.log(addrs);
                         // entity.Attendees = addresses;
                         utility.log("entity.AccessCode");
                         utility.log(entity.AccessCode);

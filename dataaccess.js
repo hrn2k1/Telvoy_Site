@@ -527,8 +527,8 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                         // utility.log('Allowed Attendees...');
                         // utility.log(addrs);
                         // entity.Attendees = addresses;
-                        // utility.log("entity.AccessCode");
-                        // utility.log(entity.AccessCode);
+                        utility.log("entity.AccessCode");
+                        utility.log(entity.AccessCode);
 
                         Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
                         if(error){

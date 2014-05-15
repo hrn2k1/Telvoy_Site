@@ -291,10 +291,6 @@ function ProcessInvitees(dbConnection,addresses,callback){
 function insertInvitationEntity(connection,entity,addresses,localtolls)
 {
   //console.log(entity.InvTime,entity.EndTime);
-  // var addresses = entity.ToEmails.split(',');
-  utility.log("---------------------------------XXX-----------------------------------");
-  utility.log(entity.ToEmails);
-
   if(entity.EndTime=="" || entity.EndTime==null || entity.EndTime=="undefined"){ 
     entity.EndTime= addMinutes(entity.InvTime,60); 
     utility.log("Empty EndTime. and added 1 hr to InvTime: ",entity.EndTime);
@@ -327,6 +323,11 @@ if(connection==null) {
   else{
     utility.log('Sender(Forwarder) Email '+entity.Forwarder+' is found in whitelist with userID '+sender.UserID);
     //////////////////////Start Invitation Process/////////////
+    
+    var addresses = entity.ToEmails.split(',');
+    utility.log("---------------------------------XXX-----------------------------------");
+    utility.log(addresses);
+    
     ProcessInvitees(connection,addresses,function(error,addrs){
       if(error){
         utility.log('ProcessInvitees error: ' + error);

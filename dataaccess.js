@@ -256,6 +256,8 @@ function ProcessInvitees(dbConnection,addresses,callback){
   var EmailAddresses = dbConnection.collection('EmailAddresses');
   
   addresses.forEach(function(addr,j){
+    utility.log("*****YYY*****");
+    utility.log(addr);
 
       EmailAddresses.findOne({EmailID: addr.address,Verified:true}, function(error, result1){
                     if(!error){

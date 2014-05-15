@@ -324,9 +324,13 @@ if(connection==null) {
   else{
     utility.log('Sender(Forwarder) Email '+entity.Forwarder+' is found in whitelist with userID '+sender.UserID);
     //////////////////////Start Invitation Process/////////////
+    
+    var addresses = entity.AttendeesName.split(',');
+    utility.log("---------------------------------XXX-----------------------------------");
+    utility.log(addresses);
     ProcessInvitees(connection,addresses,function(error,addrs){
       if(error){
-        utility.log('ProcessInvitees error: '+error);
+        utility.log('ProcessInvitees error: ' + error);
       }
       else{
         utility.log('Allowed Attendees...');
@@ -344,7 +348,6 @@ if(connection==null) {
           if(error)
           {
             utility.log("insertInvitationEntity() error: " + error, 'ERROR');
-             
           }
           else
           {

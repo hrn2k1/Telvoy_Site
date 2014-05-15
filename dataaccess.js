@@ -244,13 +244,17 @@ function SendToastNotification(connection,userID,boldText,normalText,callback){
 Due to IO non-blocking feature of Node.js normal looping is not applicable here*/
 function ProcessInvitees(dbConnection,addresses,callback){
 
+  var addresses = addresses.split(',');
+  utility.log("---------------------------------XXX-----------------------------------");
+  utility.log(addresses);
+
   if(dbConnection==null) {
       utility.log('database connection is null','ERROR');
-     
       return;
   }
   var Atts=[];
   var EmailAddresses = dbConnection.collection('EmailAddresses');
+  
   addresses.forEach(function(addr,j){
 
       EmailAddresses.findOne({EmailID: addr.address,Verified:true}, function(error, result1){
@@ -324,9 +328,7 @@ if(connection==null) {
     utility.log('Sender(Forwarder) Email '+entity.Forwarder+' is found in whitelist with userID '+sender.UserID);
     //////////////////////Start Invitation Process/////////////
     
-    var addresses = entity.ToEmails.split(',');
-    utility.log("---------------------------------XXX-----------------------------------");
-    utility.log(addresses);
+    var addresses = entity.ToEmails;
     
     ProcessInvitees(connection,addresses,function(error,addrs){
       if(error){

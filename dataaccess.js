@@ -291,14 +291,14 @@ function ProcessInvitees(dbConnection,addresses,callback){
 function insertInvitationEntity(connection,entity,addresses,localtolls)
 {
   //console.log(entity.InvTime,entity.EndTime);
-  if(entity.EndTime=="" || entity.EndTime==null || entity.EndTime=="undefined"){ 
-  entity.EndTime= addMinutes(entity.InvTime,60); 
-  utility.log("Empty EndTime. and added 1 hr to InvTime: ",entity.EndTime);
-}
-
-  var addresses = entity.AttendeesName.split(',');
+  // var addresses = entity.ToEmails.split(',');
   utility.log("---------------------------------XXX-----------------------------------");
   utility.log(entity);
+
+  if(entity.EndTime=="" || entity.EndTime==null || entity.EndTime=="undefined"){ 
+    entity.EndTime= addMinutes(entity.InvTime,60); 
+    utility.log("Empty EndTime. and added 1 hr to InvTime: ",entity.EndTime);
+  }
 
    if(localtolls!=null && localtolls.length>0){
     for (var i = 0; i < localtolls.length; i++) {

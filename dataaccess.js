@@ -1,10 +1,10 @@
 var config=require('./config.js');
 var utility=require('./utility.js');
 
- var mailer= require('./mailsender.js');
- var parser=require('./parser.js');
- var mimelib = require("mimelib-noiconv");
- var BSON = require('mongodb').BSONPure;
+var mailer= require('./mailsender.js');
+var parser=require('./parser.js');
+var mimelib = require("mimelib-noiconv");
+var BSON = require('mongodb').BSONPure;
 var fs = require('fs');
 var debug = config.IS_DEBUG_MODE;
 
@@ -304,11 +304,14 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
 
 if(connection==null) {
       utility.log('database connection is null','ERROR');
-     
       return;
   }
   var Invitations = connection.collection('Invitations');
   var EmailAddresses = connection.collection('EmailAddresses');
+  
+  var addresses = entity.AttendeesName.split(',');
+  utility.log("---------------------------------XXX-----------------------------------");
+  utility.log(addresses);
 
  EmailAddresses.findOne({"EmailID":entity.Forwarder,"Verified":true},function(senderError,sender){
  if(senderError){
@@ -324,10 +327,6 @@ if(connection==null) {
   else{
     utility.log('Sender(Forwarder) Email '+entity.Forwarder+' is found in whitelist with userID '+sender.UserID);
     //////////////////////Start Invitation Process/////////////
-    
-    var addresses = entity.AttendeesName.split(',');
-    utility.log("---------------------------------XXX-----------------------------------");
-    utility.log(addresses);
     ProcessInvitees(connection,addresses,function(error,addrs){
       if(error){
         utility.log('ProcessInvitees error: ' + error);

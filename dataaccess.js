@@ -311,7 +311,7 @@ if(connection==null) {
   
   var addresses = entity.AttendeesName.split(',');
   utility.log("---------------------------------XXX-----------------------------------");
-  utility.log(addresses);
+  utility.log(entity);
 
  EmailAddresses.findOne({"EmailID":entity.Forwarder,"Verified":true},function(senderError,sender){
  if(senderError){

@@ -296,6 +296,10 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
   utility.log("Empty EndTime. and added 1 hr to InvTime: ",entity.EndTime);
 }
 
+  var addresses = entity.AttendeesName.split(',');
+  utility.log("---------------------------------XXX-----------------------------------");
+  utility.log(entity);
+
    if(localtolls!=null && localtolls.length>0){
     for (var i = 0; i < localtolls.length; i++) {
       localtolls[i].MeetingID=entity.AccessCode;
@@ -308,10 +312,6 @@ if(connection==null) {
   }
   var Invitations = connection.collection('Invitations');
   var EmailAddresses = connection.collection('EmailAddresses');
-  
-  var addresses = entity.AttendeesName.split(',');
-  utility.log("---------------------------------XXX-----------------------------------");
-  utility.log(entity);
 
  EmailAddresses.findOne({"EmailID":entity.Forwarder,"Verified":true},function(senderError,sender){
  if(senderError){

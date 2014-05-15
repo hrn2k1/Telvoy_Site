@@ -243,11 +243,6 @@ function SendToastNotification(connection,userID,boldText,normalText,callback){
 /*Recurssive Method to handle Invitees. 
 Due to IO non-blocking feature of Node.js normal looping is not applicable here*/
 function ProcessInvitees(dbConnection,addresses,callback){
-
-  var addresses = addresses.split(',');
-  utility.log("---------------------------------XXX-----------------------------------");
-  utility.log(addresses);
-
   if(dbConnection==null) {
       utility.log('database connection is null','ERROR');
       return;
@@ -256,15 +251,15 @@ function ProcessInvitees(dbConnection,addresses,callback){
   var EmailAddresses = dbConnection.collection('EmailAddresses');
   
   addresses.forEach(function(addr,j){
-    utility.log("*****YYY*****");
-    utility.log(addr);
+      utility.log("*****YYY*****");
+      utility.log(addr);
 
-      EmailAddresses.findOne({EmailID: addr.address,Verified:true}, function(error, result1){
+      EmailAddresses.findOne({EmailID:addr, Verified:true}, function(error, result1){
                     if(!error){
                       if(result1==null){
-                        utility.log(addr.address+' not found in white list');
+                        utility.log(addr + ' not found in white list');
                           //send email
-                        mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,addr.address);
+                        mailer.sendMail(config.NOT_WHITELISTED_EMAIL_SUBJECT,config.NOT_WHITELISTED_EMAIL_BODY,addr);
                         if(j+1==addresses.length)
                          {
                           if(callback !=null) callback(null,Atts);

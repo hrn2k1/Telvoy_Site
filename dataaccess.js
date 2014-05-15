@@ -293,7 +293,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
   //console.log(entity.InvTime,entity.EndTime);
   // var addresses = entity.ToEmails.split(',');
   utility.log("---------------------------------XXX-----------------------------------");
-  utility.log(entity);
+  utility.log(entity.ToEmails);
 
   if(entity.EndTime=="" || entity.EndTime==null || entity.EndTime=="undefined"){ 
     entity.EndTime= addMinutes(entity.InvTime,60); 

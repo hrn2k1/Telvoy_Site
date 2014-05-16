@@ -517,11 +517,6 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                 utility.log('Sender(Forwarder) Email ' + entity.Forwarder + ' is found in whitelist with userID ' + sender.UserID);
                 //////////////////////Start Invitation Process/////////////
 
-                var addresses = entity.ToEmails;
-                entity.forEach(function(en, i){
-                  utility.log("entity log " + en);
-                });
-
                 // ProcessInvitees(connection,addresses,function(error,addrs){
                 //     if(error){
                 //         utility.log('ProcessInvitees error: ' + error);
@@ -532,7 +527,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                         // entity.Attendees = addresses;
                         // utility.log("entity log" + entity);
                         // utility.log("entity log" + entity.ToEmails);
-                        // utility.log(entity);
+                        utility.log(JSON.stringify(entity));
 
                         // var invite_entity = {
                         //     ToEmails : "mmnitol@outlook.com,aazaman00@outlook.com",

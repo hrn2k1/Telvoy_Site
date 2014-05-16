@@ -518,6 +518,9 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                 //////////////////////Start Invitation Process/////////////
 
                 var addresses = entity.ToEmails;
+                entity.forEach(function(en, i){
+                  utility.log("entity log " + en);
+                });
 
                 // ProcessInvitees(connection,addresses,function(error,addrs){
                 //     if(error){
@@ -528,7 +531,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                         // utility.log(addrs);
                         // entity.Attendees = addresses;
                         // utility.log("entity log" + entity);
-                        utility.log("entity log" + entity.ToEmails);
+                        // utility.log("entity log" + entity.ToEmails);
                         // utility.log(entity);
 
                         // var invite_entity = {

@@ -445,7 +445,7 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
         Subject: Subject.replace('FW: ',''),
         Toll: utility.isNull(out['toll'],''),
         PIN: utility.isNull(out['pin'],''),
-        AccessCode: utility.isNull(out['code'],''),
+        AccessCode: utility.isNull(out['meeting number'],''),
         Password: utility.isNull(out['password'],''),
         DialInProvider:utility.isNull(out['provider'],''),
         TimeStamp: new Date(),

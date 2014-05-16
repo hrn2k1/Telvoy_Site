@@ -527,8 +527,8 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                         // utility.log('Allowed Attendees...');
                         // utility.log(addrs);
                         // entity.Attendees = addresses;
-                        utility.log("entity log");
-                        utility.log(entity);
+                        utility.log("entity log" + entity);
+                        // utility.log(entity);
 
                         // var invite_entity = {
                         //     ToEmails : "mmnitol@outlook.com,aazaman00@outlook.com",

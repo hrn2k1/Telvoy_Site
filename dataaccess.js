@@ -547,12 +547,12 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                         // };
 
 
-                        // Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
-                        // if(error){
-                        //     utility.log("Error in find invitation with AccessCode to check duplicate" + error,'ERROR');
-                        // } else{
-                        //     console.log("Invitation found nor" + result_invite);
-                        //     if(result_invite == null){
+                        Invitations.findOne({"Subject": entity.Subject, "InvDate": entity.InvDate}, function(error, result_invite){
+                        if(error){
+                            utility.log("Error in find invitation with AccessCode to check duplicate" + error,'ERROR');
+                        } else{
+                            console.log("Invitation found nor" + result_invite);
+                            if(result_invite == null){
                                 Invitations.insert(entity, function(error, result) {
                                     if(error)
                                     {
@@ -565,24 +565,24 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                                         utility.log("Invitation inserted Successfully");
                                     }
                                 });
-                        //     }
-                        //     else{
-                        //         utility.log("Invitation already exist for AccessCode: "+result_invite.AccessCode);
-                        //         Invitations.update({"_id":result_invite._id}, {$set:entity}, function(error,result){
-                        //             if(error)
-                        //             {
-                        //                 utility.log("update error in insertInvitationEntity() error: " + error, 'ERROR');
-                        //             }
-                        //             else
-                        //             {
-                        //                 utility.log('update invitation result.........');
-                        //                 utility.log(result);
-                        //                 utility.log("Invitation updated Successfully");
-                        //             }
-                        //         });
-                        //     }
-                        // }
-                        // });
+                            }
+                            else{
+                                utility.log("Invitation already exist for AccessCode: "+result_invite.AccessCode);
+                                Invitations.update({"_id":result_invite._id}, {$set:entity}, function(error,result){
+                                    if(error)
+                                    {
+                                        utility.log("update error in insertInvitationEntity() error: " + error, 'ERROR');
+                                    }
+                                    else
+                                    {
+                                        utility.log('update invitation result.........');
+                                        utility.log(result);
+                                        utility.log("Invitation updated Successfully");
+                                    }
+                                });
+                            }
+                        }
+                        });
                 //     }
                 // });
             //////////////////////End Invitation Process//////////////

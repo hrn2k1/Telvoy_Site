@@ -550,7 +550,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                         //     MessageID: ""
                         // };
                         
-                        utility.log('Access Code ----------' + entity.AccessCode);
+                        // utility.log('Access Code ----------' + entity.AccessCode);
 
 
                         Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
@@ -568,7 +568,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                                     {
                                         utility.log('insert invitation result.........');
                                         utility.log(result);
-                                        utility.log("Invitation inserted Successfully");
+                                        utility.log("Invitation inserted Successfully fn insertInvitationEntity");
                                     }
                                 });
                             }
@@ -1797,7 +1797,7 @@ function insertInvitationEntity_back(connection,entity,addresses,localtolls)
           {
             utility.debug('insert invitation result.........');
             utility.debug(result);
-            utility.log("Invitation inserted Successfully");
+            utility.log("Invitation inserted Successfully fn insertInvitationEntity_back");
             InsertMeetingInvitees(EmailAddresses,Invitees,result[0]._id,addresses,0,function(){ InsertMeetingTolls(connection,localtolls);});
             //connection.close();  
             

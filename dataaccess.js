@@ -492,7 +492,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
     //     entity.EndTime = addMinutes(entity.InvTime, 60); 
     //     utility.log("Empty EndTime. and added 1 hr to InvTime: ", entity.EndTime);
     // }
-    
+    utility.log("----------Working----------");
     entity.EndTime = (entity.EndTime) ? addMinutes(entity.InvTime, 60) : ''; 
 
     if(localtolls != null && localtolls.length > 0){

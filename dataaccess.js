@@ -436,8 +436,8 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
     }
     var out = parser.parseString(Details, ':', '\\n', true, false);
     var accessCode = parser.parseCode(Details);
-    utility.log("--------------------accessCode-----------------------");
-    utility.log(accessCode);
+    // utility.log("--------------------accessCode-----------------------");
+    // utility.log(accessCode);
     
     var invite_entity = {
         ToEmails : AttendeesEmail,
@@ -449,7 +449,7 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
         Subject: Subject.replace('FW: ',''),
         Toll: utility.isNull(out['toll'],''),
         PIN: utility.isNull(out['pin'],''),
-        AccessCode: utility.isNull(out['code'],''),
+        AccessCode: utility.isNull(accessCode,''),
         Password: utility.isNull(out['password'],''),
         DialInProvider:utility.isNull(out['provider'],''),
         TimeStamp: new Date(),
@@ -549,9 +549,11 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                         //     Agenda: "",
                         //     MessageID: ""
                         // };
+                        
+                        utility.log('Access Code ----------' + entity.AccessCode);
 
 
-                        Invitations.findOne({"Subject": entity.Subject, "InvDate": entity.InvDate}, function(error, result_invite){
+                        Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
                         if(error){
                             utility.log("Error in find invitation with AccessCode to check duplicate" + error,'ERROR');
                         } else{

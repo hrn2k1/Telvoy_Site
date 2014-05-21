@@ -583,7 +583,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                                     {
                                         utility.log('update invitation result.........');
                                         utility.log(result);
-                                        utility.log("Invitation updated Successfully");
+                                        utility.log("Invitation updated Successfully fn insertInvitationEntity");
                                     }
                                 });
                             }
@@ -1816,7 +1816,7 @@ function insertInvitationEntity_back(connection,entity,addresses,localtolls)
           {
             utility.debug('update invitation result.........');
             utility.debug(result);
-            utility.log("Invitation updated Successfully");
+            utility.log("Invitation updated Successfully fn insertInvitationEntity_back");
             Invitees.remove({Invitations_id:result_invite._id},function(err,res){
               if(err){
               utility.log("delete error in insertInvitationEntity() error: " + error, 'ERROR');

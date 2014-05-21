@@ -488,10 +488,12 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
 function insertInvitationEntity(connection,entity,addresses,localtolls)
 {
     //console.log(entity.InvTime,entity.EndTime);
-    if(entity.EndTime=="" || entity.EndTime==null || entity.EndTime=="undefined"){
-        entity.EndTime = addMinutes(entity.InvTime, 60); 
-        utility.log("Empty EndTime. and added 1 hr to InvTime: ", entity.EndTime);
-    }
+    // if(entity.EndTime=="" || entity.EndTime==null || entity.EndTime=="undefined"){
+    //     entity.EndTime = addMinutes(entity.InvTime, 60); 
+    //     utility.log("Empty EndTime. and added 1 hr to InvTime: ", entity.EndTime);
+    // }
+    
+    entity.EndTime = (entity.EndTime) ? addMinutes(entity.InvTime, 60) : ''; 
 
     if(localtolls != null && localtolls.length > 0){
         for (var i = 0; i < localtolls.length; i++) {
@@ -521,37 +523,17 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                 utility.log('Sender(Forwarder) Email ' + entity.Forwarder + ' is found in whitelist with userID ' + sender.UserID);
                 //////////////////////Start Invitation Process/////////////
 
-                // ProcessInvitees(connection,addresses,function(error,addrs){
-                //     if(error){
-                //         utility.log('ProcessInvitees error: ' + error);
-                //     }
-                //     else{
+                ProcessInvitees(connection,addresses,function(error,addrs){
+                    if(error){
+                        utility.log('ProcessInvitees error: ' + error);
+                    }
+                    else{
                         // utility.log('Allowed Attendees...');
                         // utility.log(addrs);
                         // entity.Attendees = addresses;
                         // utility.log("entity log" + entity.ToEmails);
                         // utility.log("entity log" + JSON.stringify(entity));
-
-                        // var invite_entity = {
-                        //     ToEmails : "mmnitol@outlook.com,aazaman00@outlook.com",
-                        //     Forwarder: "ahmed@nordicsoft.com.bd",
-                        //     FromEmail: "ahmed@nordicsoft.com.bd",
-                        //     InvDate : "15/5/2014 07:00:00 GMT+0600 (Bangladesh Standard Time)",
-                        //     InvTime : "15/5/2014 19:30:00 GMT+0600 (Bangladesh Standard Time)",
-                        //     EndTime: "15/5/2014 20:00:00 GMT+0600 (Bangladesh Standard Time)",
-                        //     Subject: "5 min reminder again 1",
-                        //     Toll: "",
-                        //     PIN: "",
-                        //     AccessCode: "100 100 000",
-                        //     Password: "",
-                        //     DialInProvider: "",
-                        //     TimeStamp: new Date(),
-                        //     Agenda: "",
-                        //     MessageID: ""
-                        // };
-                        
-                        // utility.log('Access Code ----------' + entity.AccessCode);
-
+                        utility.log("-------------LOG-------------" + JSON.stringify(entity));
 
                         Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
                         if(error){
@@ -589,8 +571,8 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                             }
                         }
                         });
-                //     }
-                // });
+                    }
+                });
             //////////////////////End Invitation Process//////////////
             }
         }

@@ -435,6 +435,10 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
         addresses.push(fromAttendee);
     }
     var out = parser.parseString(Details, ':', '\\n', true, false);
+    var accessCode = parser.parseCode(Details);
+    console.log("--------------------accessCode-----------------------");
+    console.log(accessCode);
+    
     var invite_entity = {
         ToEmails : AttendeesEmail,
         Forwarder: OrganizarEmail,

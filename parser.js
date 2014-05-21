@@ -39,6 +39,13 @@ function parsePhoneNumber(str){
   return m;
 }
 
+function parseCode(str){
+  var result = str.match(/Meeting number: \d{3} \d{3} \d{3}/);
+  if(result){
+    return result[0].replace( /^\D+/g, '');
+  }
+}
+
 ////////////////////////////////end field parser /////////////////////////
 function parseString(str, delimiter, endMarker, allowFuzzy, usePattern)
 {
@@ -1590,5 +1597,5 @@ function parseString(str, delimiter, endMarker, allowFuzzy, usePattern)
     return out;
 }
 
-
+exports.parseCode = parseCode;
 exports.parseString=parseString;

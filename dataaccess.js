@@ -436,8 +436,8 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
     }
     var out = parser.parseString(Details, ':', '\\n', true, false);
     var accessCode = parser.parseCode(Details);
-    console.log("--------------------accessCode-----------------------");
-    console.log(accessCode);
+    utility.log("--------------------accessCode-----------------------");
+    utility.log(accessCode);
     
     var invite_entity = {
         ToEmails : AttendeesEmail,

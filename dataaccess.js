@@ -437,16 +437,16 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
     }
     var out = parser.parseString(Details, ':', '\\n', true, false);
     var accessCode = parser.parseCode(Details);
-    var InvDate = moment(StartTime, "D-M-YYYY H:mm:ss")._d;
-    var InvTime = moment(InvTime, "D-M-YYYY H:mm:ss")._d;
+    var mInvDate = moment(StartTime, "D-M-YYYY H:mm:ss")._d;
+    var mInvTime = moment(StartTime, "D-M-YYYY H:mm:ss")._d;
     var mEndTime = moment(EndTime, "D-M-YYYY H:mm:ss")._d;
     
     var invite_entity = {
         ToEmails : AttendeesEmail,
         Forwarder: OrganizarEmail,
         FromEmail: OrganizarEmail,
-        InvDate : StartTime,
-        InvTime : StartTime,
+        InvDate : mInvDate,
+        InvTime : mInvTime,
         EndTime: mEndTime,
         Subject: Subject.replace('FW: ',''),
         Toll: utility.isNull(out['toll'],''),

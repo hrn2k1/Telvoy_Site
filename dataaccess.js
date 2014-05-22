@@ -496,7 +496,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
     // }
     // utility.log("----------Working----------");
     utility.log("----------Working----------" + JSON.stringify(entity));
-    entity.EndTime = (entity.EndTime) ? addMinutes(entity.InvTime, 60) : '';
+    // entity.EndTime = (entity.EndTime) ? addMinutes(entity.InvTime, 60) : '';
     utility.log("-------------AFTER-------------" + JSON.stringify(entity));
 
     if(localtolls != null && localtolls.length > 0){

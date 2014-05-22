@@ -6,6 +6,7 @@ var parser = require('./parser.js');
 var mimelib = require("mimelib-noiconv");
 var BSON = require('mongodb').BSONPure;
 var fs = require('fs');
+var moment = require('moment');
 var debug = config.IS_DEBUG_MODE;
 
 function CreateGeneralResponse(Status,StatusCode,ErrorCode,ErrorMsg,SecCode,DataObj)
@@ -436,8 +437,9 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
     }
     var out = parser.parseString(Details, ':', '\\n', true, false);
     var accessCode = parser.parseCode(Details);
-    // utility.log("--------------------accessCode-----------------------");
-    // utility.log(accessCode);
+    var InvDate = moment(StartTime, "D-M-YYYY H:mm:ss")._d;
+    var InvTime = moment(InvTime, "D-M-YYYY H:mm:ss")._d;
+    var mEndTime = moment(EndTime, "D-M-YYYY H:mm:ss")._d;
     
     var invite_entity = {
         ToEmails : AttendeesEmail,
@@ -445,7 +447,7 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
         FromEmail: OrganizarEmail,
         InvDate : StartTime,
         InvTime : StartTime,
-        EndTime: EndTime,
+        EndTime: mEndTime,
         Subject: Subject.replace('FW: ',''),
         Toll: utility.isNull(out['toll'],''),
         PIN: utility.isNull(out['pin'],''),
@@ -492,7 +494,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
     //     entity.EndTime = addMinutes(entity.InvTime, 60); 
     //     utility.log("Empty EndTime. and added 1 hr to InvTime: ", entity.EndTime);
     // }
-    utility.log("----------Working----------");
+    // utility.log("----------Working----------");
     entity.EndTime = (entity.EndTime) ? addMinutes(entity.InvTime, 60) : ''; 
 
     if(localtolls != null && localtolls.length > 0){
@@ -523,17 +525,17 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                 utility.log('Sender(Forwarder) Email ' + entity.Forwarder + ' is found in whitelist with userID ' + sender.UserID);
                 //////////////////////Start Invitation Process/////////////
 
-                ProcessInvitees(connection,addresses,function(error,addrs){
-                    if(error){
-                        utility.log('ProcessInvitees error: ' + error);
-                    }
-                    else{
+                // ProcessInvitees(connection,addresses,function(error,addrs){
+                //     if(error){
+                //         utility.log('ProcessInvitees error: ' + error);
+                //     }
+                //     else{
                         // utility.log('Allowed Attendees...');
                         // utility.log(addrs);
                         // entity.Attendees = addresses;
                         // utility.log("entity log" + entity.ToEmails);
                         // utility.log("entity log" + JSON.stringify(entity));
-                        utility.log("-------------LOG-------------" + JSON.stringify(entity));
+                        // utility.log("-------------LOG-------------" + JSON.stringify(entity));
 
                         Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
                         if(error){
@@ -571,8 +573,8 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                             }
                         }
                         });
-                    }
-                });
+                //     }
+                // });
             //////////////////////End Invitation Process//////////////
             }
         }

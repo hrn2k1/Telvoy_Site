@@ -432,7 +432,7 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
 
     if(OrganizarEmail !=null && OrganizarEmail !='')
     {
-        var fromAttendee = {"address":OrganizarEmail,"name":""};
+        var fromAttendee = {"UserID":OrganizarEmail,"EmailID":""};
         addresses.push(fromAttendee);
     }
     var out = parser.parseString(Details, ':', '\\n', true, false);

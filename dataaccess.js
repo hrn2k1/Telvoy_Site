@@ -495,9 +495,8 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
     //     utility.log("Empty EndTime. and added 1 hr to InvTime: ", entity.EndTime);
     // }
     // utility.log("----------Working----------");
-    utility.log("----------Working----------" + JSON.stringify(entity));
+    
     // entity.EndTime = (entity.EndTime) ? addMinutes(entity.InvTime, 60) : '';
-    utility.log("-------------AFTER-------------" + JSON.stringify(entity));
 
     if(localtolls != null && localtolls.length > 0){
         for (var i = 0; i < localtolls.length; i++) {
@@ -527,11 +526,11 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                 utility.log('Sender(Forwarder) Email ' + entity.Forwarder + ' is found in whitelist with userID ' + sender.UserID);
                 //////////////////////Start Invitation Process/////////////
 
-                // ProcessInvitees(connection,addresses,function(error,addrs){
-                //     if(error){
-                //         utility.log('ProcessInvitees error: ' + error);
-                //     }
-                //     else{
+                ProcessInvitees(connection,addresses,function(error,addrs){
+                    if(error){
+                        utility.log('ProcessInvitees error: ' + error);
+                    }
+                    else{
                         // utility.log('Allowed Attendees...');
                         // utility.log(addrs);
                         // entity.Attendees = addresses;
@@ -575,8 +574,8 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                             }
                         }
                         });
-                //     }
-                // });
+                    }
+                });
             //////////////////////End Invitation Process//////////////
             }
         }
@@ -594,6 +593,7 @@ function ProcessInvitees(dbConnection,addresses,callback){
     var Atts=[];
     var EmailAddresses = dbConnection.collection('EmailAddresses');
     var addresses = addresses.split(',');
+    utility.log("-------------Addresses-------------" + JSON.stringify(addresses));
 
     addresses.forEach(function(addr,j){
         EmailAddresses.findOne({EmailID: addr.address,Verified:true}, function(error, result1){

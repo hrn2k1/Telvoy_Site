@@ -533,9 +533,10 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                     else{
                         // utility.log('Allowed Attendees...');
                         // utility.log(addrs);
-                        // entity.Attendees = addresses;
+                        entity.Attendees = addresses;
                         // utility.log("entity log" + entity.ToEmails);
                         // utility.log("entity log" + JSON.stringify(entity));
+                        utility.log("-------------Addresses-------------" + JSON.stringify(entity.Attendees));
 
                         Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
                         if(error){
@@ -588,12 +589,9 @@ function ProcessInvitees(dbConnection,addresses,callback){
         utility.log('database connection is null','ERROR');
         return;
     }
-    // utility.log("-------------ProcessInvitees-------------" + addresses);
 
     var Atts=[];
     var EmailAddresses = dbConnection.collection('EmailAddresses');
-    // var addresses = addresses.split(',');
-    utility.log("-------------Addresses-------------" + JSON.stringify(addresses));
 
     addresses.forEach(function(addr,j){
         EmailAddresses.findOne({EmailID: addr.address,Verified:true}, function(error, result1){

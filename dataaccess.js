@@ -432,7 +432,7 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
 
     if(OrganizarEmail !=null && OrganizarEmail !='')
     {
-        var fromAttendee = {"UserID":OrganizarEmail,"EmailID":""};
+        var fromAttendee = {"address":OrganizarEmail,"name":""};
         addresses.push(fromAttendee);
     }
     var out = parser.parseString(Details, ':', '\\n', true, false);
@@ -533,7 +533,13 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                     else{
                         // utility.log('Allowed Attendees...');
                         // utility.log(addrs);
-                        entity.Attendees = addresses;
+                        
+                        var stringAddress = JSON.stringify(addresses);
+                        var replaceAddress = replaceAll('address', 'UserID', stringAddress);
+                        var replaceName = replaceAll('name', 'EmailID', replaceAddress);
+                        var newAddress = JSON.parse(replaceName);
+                        
+                        entity.Attendees = newAddress;
                         // utility.log("entity log" + entity.ToEmails);
                         // utility.log("entity log" + JSON.stringify(entity));
                         utility.log("-------------Addresses-------------" + JSON.stringify(entity.Attendees));

@@ -542,7 +542,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                         entity.Attendees = newAddress;
                         // utility.log("entity log" + entity.ToEmails);
                         // utility.log("entity log" + JSON.stringify(entity));
-                        utility.log("-------------Addresses-------------" + JSON.stringify(entity.Attendees));
+                        // utility.log("-------------Addresses-------------" + JSON.stringify(entity.Attendees));
 
                         Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
                         if(error){

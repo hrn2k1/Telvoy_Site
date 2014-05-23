@@ -527,6 +527,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                 //////////////////////Start Invitation Process/////////////
 
                 ProcessInvitees(connection,addresses,function(error,addrs){
+                    utility.log("-------------insertInvitationEntity-------------" + addresses);
                     if(error){
                         utility.log('ProcessInvitees error: ' + error);
                     }
@@ -589,6 +590,7 @@ function ProcessInvitees(dbConnection,addresses,callback){
         utility.log('database connection is null','ERROR');
         return;
     }
+    utility.log("-------------ProcessInvitees-------------" + addresses);
 
     var Atts=[];
     var EmailAddresses = dbConnection.collection('EmailAddresses');

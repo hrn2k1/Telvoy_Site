@@ -223,8 +223,9 @@ http.createServer(function(request, response) {
         var user=querystring.parse(query);
         //var u=utility.Nullify(user['u']);
         //console.log(u);
-        dao.insertPushURL(response,connection,utility.Nullify(user['handle']),utility.Nullify(user['userID']));
-        
+        //dao.insertPushURL(response,connection,utility.Nullify(user['handle']),utility.Nullify(user['userID']));
+        dao.insertPushURL(response,connection,utility.Nullify(user['handle']),utility.Nullify(user['userID']),utility.isNull(user['timeZone'],0));
+      
     }
     else if(uri.toLowerCase() === "/setremainder") {
         var query = url.parse(request.url).query;

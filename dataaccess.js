@@ -323,16 +323,18 @@ if(connection==null) {
 
 }
 
-function insertPushURL(response,connection,url,userID){
+function insertPushURL(response,connection,url,userID,timeZone){
   
   var entity_insert = {
    "Handle":url,
    "UserID":userID,
    "RemainderMinute": 10,
+   "TimeZone": timeZone,
    "TimeStamp": new Date()
  };
  var entity_update = {
    "Handle":url,
+   "TimeZone": timeZone,
    "TimeStamp": new Date()
  };
 if(connection==null) {

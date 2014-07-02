@@ -411,22 +411,7 @@ function replaceAll(find, replace, str) {
 
 function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTime,OrganizarName,OrganizarEmail,AttendeesName,AttendeesEmail,AccountName,AccountKind,Location,Status,IsPrivate,IsAllDayEvent)
 {
-    var entity = {
-       "Subject":Subject,
-       "Details": Details,
-       "StartTime":StartTime,
-       "EndTime":EndTime,
-       "OrganizarName":OrganizarName,
-       "OrganizarEmail":OrganizarEmail,
-       "AttendeesName":AttendeesName,
-       "AttendeesEmail":AttendeesEmail,
-       "AccountName":AccountName,
-       "AccountKind":AccountKind,
-       "Location":Location,
-       "Status":Status,
-       "IsPrivate":IsPrivate,
-       "IsAllDayEvent":IsAllDayEvent
-    };
+    
     AttendeesEmail = replaceAll(';', ',', AttendeesEmail.toLowerCase());
     AttendeesEmail = replaceAll('mailto:', '', AttendeesEmail);
     // console.log(entity);
@@ -442,6 +427,24 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
     var mInvDate = moment(StartTime, "D-M-YYYY H:mm:ss")._d;
     var mInvTime = moment(StartTime, "D-M-YYYY H:mm:ss")._d;
     var mEndTime = moment(EndTime, "D-M-YYYY H:mm:ss")._d;
+    
+    var entity = {
+       "Subject":Subject,
+       "Details": Details,
+       "StartTime":StartTime,
+       "EndTime":EndTime,
+       "OrganizarName":OrganizarName,
+       "OrganizarEmail":OrganizarEmail,
+       "AttendeesName":AttendeesName,
+       "AttendeesEmail":AttendeesEmail,
+       "AccountName":AccountName,
+       "AccountKind":AccountKind,
+       "Location":Location,
+       "Status":Status,
+       "IsPrivate":IsPrivate,
+       "IsAllDayEvent":IsAllDayEvent,
+       "AccessCode":utility.isNull(accessCode,'')
+    };
     
     var invite_entity = {
         ToEmails : AttendeesEmail,

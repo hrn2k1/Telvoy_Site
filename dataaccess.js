@@ -530,24 +530,15 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
             else{
                 utility.log('Sender(Forwarder) Email ' + entity.Forwarder + ' is found in whitelist with userID ' + sender.UserID);
                 //////////////////////Start Invitation Process/////////////
-
+                var mailSubject = entity.Subject.replace('Fwd: ','');
                 ProcessInvitees(connection,addresses,function(error,addrs){
                     if(error){
-                        utility.log('ProcessInvitees error: ' + error);
-                    }
-                    else{
-                        // utility.log('Allowed Attendees...');
-                        // utility.log(addrs);
-                        
-                        var stringAddress = JSON.stringify(addresses);
-                        var replaceAddress = replaceAll('address', 'UserID', stringAddress);
-                        var replaceName = replaceAll('name', 'EmailID', replaceAddress);
-                        var newAddress = JSON.parse(replaceName);
-                        
-                        entity.Attendees = newAddress;
-                        // utility.log("entity log" + entity.ToEmails);
-                        utility.log("-----entity log-----" + JSON.stringify(entity));
-                        // utility.log("-------------Addresses-------------" + JSON.stringify(entity.Attendees));
+                        utility.log('ProcessInvitees error: '+error);
+                      }
+                      else{
+                        utility.log('Allowed Attendees...');
+                        utility.log(addrs);
+                        entity.Attendees=addrs;
 
                         Invitations.findOne({"AccessCode": entity.AccessCode}, function(error, result_invite){
                         if(error){

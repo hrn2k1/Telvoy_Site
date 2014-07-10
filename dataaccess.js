@@ -920,6 +920,7 @@ function deleteEmailAddress(response,connection,userID,emailID)
     }
     else
     {
+        mailer.sendMail('Telvoy : Email Address Delete Notification','Your Email Address '+emailID+' is has been deleted from whitelist of '+userID,emailID);
       utility.log("Email Address deleted Successfully");
       response.setHeader("content-type", "text/plain");
       response.write(SuccessJson());

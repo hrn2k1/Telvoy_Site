@@ -424,6 +424,122 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
     }
     var out = parser.parseString(Details, ':', '\\n', true, false);
     var accessCode = parser.parseCode(Details);
+    var mInvDate = StartTime; //moment(StartTime, "D-M-YYYY H:mm:ss")._d;
+    var mInvTime = StartTime; //moment(StartTime, "D-M-YYYY H:mm:ss")._d;
+    var mEndTime = EndTime; // moment(EndTime, "D-M-YYYY H:mm:ss")._d;
+    var entity = {
+       "Subject":Subject,
+       "Details": Details,
+       "StartTime":StartTime,
+       "EndTime":EndTime,
+       "OrganizarName":OrganizarName,
+       "OrganizarEmail":OrganizarEmail,
+       "AttendeesName":AttendeesName,
+       "AttendeesEmail":AttendeesEmail,
+       "AccountName":AccountName,
+       "AccountKind":AccountKind,
+       "Location":Location,
+       "Status":Status,
+       "IsPrivate":IsPrivate,
+       "IsAllDayEvent":IsAllDayEvent,
+       "AccessCode":utility.isNull(accessCode,'')
+    };
+    var invite_entity = {
+        ToEmails : AttendeesEmail,
+        Forwarder: OrganizarEmail,
+        FromEmail: OrganizarEmail,
+        InvDate : mInvDate,
+        InvTime : mInvTime,
+        EndTime: mEndTime,
+        Subject: Subject.replace('FW: ',''),
+        Toll: utility.isNull(out['toll'],''),
+        PIN: utility.isNull(out['pin'],''),
+        AccessCode: utility.isNull(accessCode,''),
+        Password: utility.isNull(out['password'],''),
+        DialInProvider:utility.isNull(out['provider'],''),
+        TimeStamp: new Date(),
+        Agenda:utility.isNull(out['agenda'],''),
+        MessageID: ''
+    };
+
+    if(connection==null) {
+          utility.log('database connection is null', 'ERROR');
+          response.setHeader("content-type", "text/plain");
+          response.write(unSuccessJson("Database Connection Failed."));
+          response.end();
+          return;
+    }
+    var collection = connection.collection('CalendarEvents'); 
+    collection.findOne({"AccessCode":utility.isNull(accessCode,'')},function(err,calevent){
+      if(err){
+            utility.log("Error in find CalendarEvents with AccessCode to check duplicate" + error,'ERROR');
+             } else{
+              if(calevent == null){
+                utility.log('New Calendar Event for'+accessCode);
+                collection.insert(entity, function(error, result){
+                if(error)
+                {
+                    utility.log("insert CalendarEvent() error: " + error, 'ERROR');
+                    response.setHeader("content-type", "text/plain");
+                    response.write( unSuccessJson(error));
+                    response.end();
+                }
+                else
+                {
+                    // console.log(result);
+                    utility.log("Calendar Event inserted Successfully");
+                    response.setHeader("content-type", "text/plain");
+                    response.write(SuccessJson());
+                    response.end();
+                    insertInvitationEntity(connection,invite_entity,addresses,out['tolls']);
+                }
+            });
+
+              }
+              else{
+
+                utility.log('Calendar Event for'+accessCode+' already exist');
+                collection.update({"_id":calevent._id},{$set:entity}, function(error, result){
+                if(error)
+                {
+                    utility.log("update CalendarEvent() error: " + error, 'ERROR');
+                    response.setHeader("content-type", "text/plain");
+                    response.write( unSuccessJson(error));
+                    response.end();
+                }
+                else
+                {
+                    // console.log(result);
+                    utility.log("Calendar Event updated Successfully");
+                    response.setHeader("content-type", "text/plain");
+                    response.write(SuccessJson());
+                    response.end();
+                    insertInvitationEntity(connection,invite_entity,addresses,out['tolls']);
+                }
+            });
+
+
+              }
+            }
+    });
+    
+}
+
+function insertCalendarEvent_bak(response,connection,Subject,Details,StartTime,EndTime,OrganizarName,OrganizarEmail,AttendeesName,AttendeesEmail,AccountName,AccountKind,Location,Status,IsPrivate,IsAllDayEvent)
+{
+    
+    AttendeesEmail = replaceAll(';', ',', AttendeesEmail.toLowerCase());
+    AttendeesEmail = replaceAll('mailto:', '', AttendeesEmail);
+    // console.log(entity);
+    var addresses = mimelib.parseAddresses(AttendeesEmail);
+
+    if(OrganizarEmail !=null && OrganizarEmail !='')
+    {
+        var fromAttendee = {"address":OrganizarEmail,"name":""};
+        addresses.push(fromAttendee);
+    }
+    var out = parser.parseString(Details, ':', '\\n', true, false);
+    var accessCode = parser.parseCode(Details);
     var mInvDate = moment(StartTime, "D-M-YYYY H:mm:ss")._d;
     var mInvTime = moment(StartTime, "D-M-YYYY H:mm:ss")._d;
     var mEndTime = moment(EndTime, "D-M-YYYY H:mm:ss")._d;

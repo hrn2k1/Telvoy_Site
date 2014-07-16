@@ -426,10 +426,11 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
     var out = parser.parseString(Details, ':', '\\n', true, false);
     var accessCode = parser.parseCode(Details);
     var mmnt=moment(StartTime, "DD-MM-YYYY HH:mm:ss");
-    var mInvDate = mmnt.startOf('day')._d;
     var mInvTime = mmnt._d;
-    mmnt=moment(EndTime, "DD-MM-YYYY HH:mm:ss");
-    var mEndTime = mmnt._d; 
+    var mInvDate = mmnt.startOf('day')._d;
+    
+    var mmnt1=moment(EndTime, "DD-MM-YYYY HH:mm:ss");
+    var mEndTime = mmnt1._d; 
     var entity = {
        "Subject":Subject,
        "Details": Details,

@@ -424,14 +424,16 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
     }
     var out = parser.parseString(Details, ':', '\\n', true, false);
     var accessCode = parser.parseCode(Details);
-    var mInvDate = StartTime; //moment(StartTime, "D-M-YYYY H:mm:ss")._d;
-    var mInvTime = StartTime; //moment(StartTime, "D-M-YYYY H:mm:ss")._d;
-    var mEndTime = EndTime; // moment(EndTime, "D-M-YYYY H:mm:ss")._d;
+    var mmnt=moment(StartTime, "DD-MM-YYYY HH:mm:ss");
+    var mInvDate = mmnt.startOf('day')._d;
+    var mInvTime = mmnt._d;
+    mmnt=moment(EndTime, "DD-MM-YYYY HH:mm:ss");
+    var mEndTime = mmnt._d; 
     var entity = {
        "Subject":Subject,
        "Details": Details,
-       "StartTime":StartTime,
-       "EndTime":EndTime,
+       "StartTime":mInvTime,
+       "EndTime":mEndTime,
        "OrganizarName":OrganizarName,
        "OrganizarEmail":OrganizarEmail,
        "AttendeesName":AttendeesName,
@@ -524,7 +526,6 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
     });
     
 }
-
 function insertCalendarEvent_bak(response,connection,Subject,Details,StartTime,EndTime,OrganizarName,OrganizarEmail,AttendeesName,AttendeesEmail,AccountName,AccountKind,Location,Status,IsPrivate,IsAllDayEvent)
 {
     

@@ -411,7 +411,8 @@ function replaceAll(find, replace, str) {
 
 function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTime,OrganizarName,OrganizarEmail,AttendeesName,AttendeesEmail,AccountName,AccountKind,Location,Status,IsPrivate,IsAllDayEvent)
 {
-    
+ 
+   console.log('Subject: '+Subject+' StartTime: '+StartTime+' EndTime: '+EndTime); 
     AttendeesEmail = replaceAll(';', ',', AttendeesEmail.toLowerCase());
     AttendeesEmail = replaceAll('mailto:', '', AttendeesEmail);
     // console.log(entity);
@@ -446,6 +447,7 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
        "IsAllDayEvent":IsAllDayEvent,
        "AccessCode":utility.isNull(accessCode,'')
     };
+    console.log(entity);
     var invite_entity = {
         ToEmails : AttendeesEmail,
         Forwarder: OrganizarEmail,
@@ -463,7 +465,7 @@ function insertCalendarEvent(response,connection,Subject,Details,StartTime,EndTi
         Agenda:utility.isNull(out['agenda'],''),
         MessageID: ''
     };
-
+console.log(invite_entity);
     if(connection==null) {
           utility.log('database connection is null', 'ERROR');
           response.setHeader("content-type", "text/plain");

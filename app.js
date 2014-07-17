@@ -203,7 +203,13 @@ http.createServer(function(request, response) {
           dao.getInvitations(response,connection,utility.Nullify(params['userID']),utility.Nullify(params['id']));
          
     }
-    
+     else if (uri.toLowerCase() === "/getsettings") {
+                    //utility.log('I am in /conf');
+                    var query = url.parse(request.url).query;
+                    var params = querystring.parse(query);
+                    dao.GetUserSettings(response, connection, utility.Nullify(params['userID']));
+         
+                }
     else if (uri.toLowerCase() === "/notif") {
         utility.log(request.url);
         dao.getNotifications(response,connection);

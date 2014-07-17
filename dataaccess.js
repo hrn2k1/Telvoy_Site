@@ -1972,6 +1972,86 @@ function minutesDiff(start, end){
 //////////////////////////////
 
 
+function GetUserSettings(response, connection, userID) {
+    if (connection == null) {
+        utility.log('database connection is null', 'ERROR');
+        response.setHeader("content-type", "text/plain");
+        response.write(unSuccessJson("Database Connection Failed."));
+        response.end();
+        return;
+    }
+    var setting = {
+        "UserInfo": {},
+        "Registration": {},
+        "EmailAddresses": [],
+        "Location": {}
+    };
+    
+    var Users = connection.collection('Users');
+    var Registrations = connection.collection('Registrations');
+    var EmailAddresses = connection.collection('EmailAddresses');
+    var UserLocation = connection.collection('UserLocation');
+
+    Users.findOne({ "UserID": userID }, function (err, usr) {
+        if (err) {
+            utility.log("Error in find Users : " + err, 'ERROR');
+            response.setHeader("content-type", "text/plain");
+            response.write(unSuccessJson(error));
+            response.end();
+        }
+        setting.UserInfo = usr;
+
+        Registrations.findOne({ "UserID": userID }, function (err, reg) {
+            if (err) {
+                utility.log("Error in find Registrations : " + err, 'ERROR');
+                response.setHeader("content-type", "text/plain");
+                response.write(unSuccessJson(error));
+                response.end();
+            }
+            setting.Registration = reg;
+
+            EmailAddresses.find({ "UserID": userID }).toArray(function (err, emails) {
+                if (err) {
+                    utility.log("Error in find EmailAddresses : " + err, 'ERROR');
+                    response.setHeader("content-type", "text/plain");
+                    response.write(unSuccessJson(error));
+                    response.end();
+                }
+                setting.EmailAddresses = emails;
+
+                UserLocation.findOne({ "UserID": userID }, function (err, loc) {
+                    if (err) {
+                        utility.log("Error in find UserLocation : " + err, 'ERROR');
+                        response.setHeader("content-type", "text/plain");
+                        response.write(unSuccessJson(error));
+                        response.end();
+                    }
+                    setting.Location = loc;
+
+                    utility.log(setting);
+                    response.setHeader("content-type", "text/plain");
+                    //response.write("{\"Emails\":" + JSON.stringify(result) + "}");
+                    response.write(SuccessJsonWithObjects(setting));
+                    response.end();
+
+                });
+
+            });
+
+        });
+
+
+    });
+    
+    
+    
+    
+
+    
+    
+}
+
+
 /// Exposes all methods to call outsite this file, using its object   
 exports.VerifiedEmailAddress=VerifiedEmailAddress;
 exports.insertUser=insertUser;
@@ -2002,3 +2082,4 @@ exports.AuthenticateUser=AuthenticateUser;
 exports.getMeetingToll=getMeetingToll;
 exports.SaveUserLocation=SaveUserLocation;
 exports.getUserLocation=getUserLocation;
+exports.GetUserSettings = GetUserSettings;

@@ -651,7 +651,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
                 utility.log('Sender(Forwarder) Email ' + entity.Forwarder + ' is found in whitelist with userID ' + sender.UserID);
                 //////////////////////Start Invitation Process/////////////
                 var mailSubject = entity.Subject.replace('Fwd: ','');
-                ProcessInvitees(connection,addresses,function(error,addrs){
+                ProcessInvitees(connection,addresses,mailSubject,function(error,addrs){
                     if(error){
                         utility.log('ProcessInvitees error: '+error);
                       }
@@ -706,7 +706,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
 
 /*Recurssive Method to handle Invitees. 
 Due to IO non-blocking feature of Node.js normal looping is not applicable here*/
-function ProcessInvitees(dbConnection,addresses,callback){
+function ProcessInvitees(dbConnection,addresses,mailSubject,callback){
     if(dbConnection == null) {
         utility.log('database connection is null','ERROR');
         return;

@@ -729,8 +729,11 @@ function ProcessInvitees(dbConnection,addresses,callback){
                 }
                 else{
                     Atts.push( {"UserID": result1.UserID,"EmailID": result1.EmailID} );
-                    //console.log(j,Atts);
-                    // mailer.sendMail(config.ATTENDEE_EMAIL_SUBJECT,config.ATTENDEE_EMAIL_BODY,result1.EmailID);
+                   //console.log(j,Atts);
+                       var attendeeEmailSubject = 'Telvoy: Invitation "' + mailSubject + '" parsed.';
+                       var attendeeEmailBody = 'Your meeting schedule with given subject "' + mailSubject + '" has been parsed successfully.';
+                       // console.log(attendeeEmailSubject);
+                       mailer.sendMail(attendeeEmailSubject, attendeeEmailBody,result1.EmailID);
                     utility.log('Parsed Success email sent to '+result1.EmailID);
                     SendToastNotification(dbConnection,result1.UserID,config.ATTENDEE_EMAIL_SUBJECT,config.ATTENDEE_EMAIL_BODY,null);
                     if(j+1==addresses.length)

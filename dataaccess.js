@@ -2089,7 +2089,7 @@ function SendSelfTile(response, connection, userID, subject, day, time) {
         'wideBackBackgroundImage': "Images/logoBackX691.png"
     };
     utility.debug('Tile Object to send from Phone');
-    utility.debug(tileObj);
+    utility.debug(flipTileObj);
     var Registrations = connection.collection('Registrations');
     Registrations.findOne({ UserID: att.UserID }, function (error, registrations) {
         

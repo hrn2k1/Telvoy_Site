@@ -203,6 +203,11 @@ http.createServer(function(request, response) {
           dao.getInvitations(response,connection,utility.Nullify(params['userID']),utility.Nullify(params['id']));
          
     }
+     else if(uri.toLowerCase()=="/sendtile"){
+      var query = url.parse(request.url).query;
+      var params=querystring.parse(query);
+      dao.SendSelfTile(response,connection,utility.Nullify(params['userID']),utility.Nullify(params['subject']),utility.Nullify(params['day']),utility.Nullify(params['time']))
+    }
      else if (uri.toLowerCase() === "/getsettings") {
                     //utility.log('I am in /conf');
                     var query = url.parse(request.url).query;

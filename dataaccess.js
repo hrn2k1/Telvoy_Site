@@ -8,6 +8,7 @@ var BSON = require('mongodb').BSONPure;
 var fs = require('fs');
 var moment = require('moment');
 var debug = config.IS_DEBUG_MODE;
+var mpns = require('mpns');
 
 function CreateGeneralResponse(Status,StatusCode,ErrorCode,ErrorMsg,SecCode,DataObj)
 {
@@ -2127,7 +2128,7 @@ function SendSelfTile(response, connection, userID, subject, day, time) {
 
 
 /// Exposes all methods to call outsite this file, using its object   
-exports.SendSelfTile=SendSelfTile
+exports.SendSelfTile=SendSelfTile;
 exports.VerifiedEmailAddress=VerifiedEmailAddress;
 exports.insertUser=insertUser;
 exports.insertEmailAddress=insertEmailAddress;

@@ -6,6 +6,7 @@
     "start": "node app.js"
   },
   "dependencies": {
+     "mpns": "2.0.1",
     "mimelib-noiconv": "*",
     "querystring": "*",
     "nodemailer": "0.5.14",

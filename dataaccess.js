@@ -2064,7 +2064,70 @@ function GetUserSettings(response, connection, userID) {
 }
 
 
+function SendSelfTile(response, connection, userID, subject, day, time) {
+    
+    if (connection == null) {
+        utility.log('database connection is null', 'ERROR');
+        response.setHeader("content-type", "text/plain");
+        response.write(unSuccessJson("Database Connection Failed."));
+        response.end();
+        return;
+    }
+    
+    var invSubject = subject.length <= 23?subject: subject.substring(0, 20) + '...';
+    var InvSubjectLarge = subject.length <= 46?subject: subject.substring(0, 43) + '...';
+    var backHeader = day;
+    var meetingTime = time;
+    
+    var flipTileObj = {
+        'title' : '', 
+        'backTitle' : 'TELVOY',
+        'backContent' : backHeader + '\n' + invSubject + '\n' + meetingTime,
+        'wideBackContent': backHeader + '\n' + InvSubjectLarge + '\n' + meetingTime,
+        'backBackgroundImage': "Images/logoBackX336.png",
+        'wideBackBackgroundImage': "Images/logoBackX691.png"
+    };
+    utility.debug('Tile Object to send from Phone');
+    utility.debug(tileObj);
+    var Registrations = connection.collection('Registrations');
+    Registrations.findOne({ UserID: att.UserID }, function (error, registrations) {
+        
+        if (error) {
+            utility.log("find registration error: " + error, 'ERROR');
+            response.setHeader("content-type", "text/plain");
+            response.write(unSuccessJson(error));
+            response.end();
+        }
+      else {
+                if (debug == true) {
+                    utility.log('Invitees Push URL Info');
+                    utility.log(registrations);
+                }
+                        if (registrations != null) {
+                            var pushURL = registrations.Handle;
+                
+                            mpns.sendFlipTile(pushURL, flipTileObj, function () {
+                                utility.log('Pushed to ' + userID + " for " + subject);
+                    
+                                response.setHeader("content-type", "text/plain");
+                                response.write(SuccessJson());
+                                response.end();
+                            });
+                        }
+                        else {
+                            utility.log("Push URL Not Found");
+                            response.setHeader("content-type", "text/plain");
+                            response.write(unSuccessJson("Push URL Not Found."));
+                            response.end();
+                        }
+        }
+    });
+}
+
+
+
 /// Exposes all methods to call outsite this file, using its object   
+exports.SendSelfTile=SendSelfTile
 exports.VerifiedEmailAddress=VerifiedEmailAddress;
 exports.insertUser=insertUser;
 exports.insertEmailAddress=insertEmailAddress;

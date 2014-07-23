@@ -2091,7 +2091,7 @@ function SendSelfTile(response, connection, userID, subject, day, time) {
     utility.debug('Tile Object to send from Phone');
     utility.debug(flipTileObj);
     var Registrations = connection.collection('Registrations');
-    Registrations.findOne({ UserID: att.UserID }, function (error, registrations) {
+    Registrations.findOne({ UserID: userID }, function (error, registrations) {
         
         if (error) {
             utility.log("find registration error: " + error, 'ERROR');

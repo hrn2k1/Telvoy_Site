@@ -2075,19 +2075,31 @@ function SendSelfTile(response, connection, userID, subject, day, time) {
         return;
     }
     
-    var invSubject = subject.length <= 23?subject: subject.substring(0, 20) + '...';
-    var InvSubjectLarge = subject.length <= 46?subject: subject.substring(0, 43) + '...';
-    var backHeader = day;
-    var meetingTime = time;
-    
-    var flipTileObj = {
-        'title' : '', 
-        'backTitle' : 'TELVOY',
-        'backContent' : backHeader + '\n' + invSubject + '\n' + meetingTime,
-        'wideBackContent': backHeader + '\n' + InvSubjectLarge + '\n' + meetingTime,
-        'backBackgroundImage': "Images/logoBackX336.png",
-        'wideBackBackgroundImage': "Images/logoBackX691.png"
-    };
+     if (subject.trim() == '' || day.trim() == '' || time.trim() == '') {
+        
+        var flipTileObj = {
+            'title' : null,
+            'backTitle' : null,
+            'backBackgroundImage' : "",
+            'backContent' : null,
+            'wideBackContent': null
+        };
+    }
+    else {
+        var invSubject = subject.length <= 23?subject: subject.substring(0, 20) + '...';
+        var InvSubjectLarge = subject.length <= 46?subject: subject.substring(0, 43) + '...';
+        var backHeader = day;
+        var meetingTime = time;
+        
+        var flipTileObj = {
+            'title' : '', 
+            'backTitle' : 'TELVOY',
+            'backContent' : backHeader + '\n' + invSubject + '\n' + meetingTime,
+            'wideBackContent': backHeader + '\n' + InvSubjectLarge + '\n' + meetingTime,
+            'backBackgroundImage': "Images/logoBackX336.png",
+            'wideBackBackgroundImage': "Images/logoBackX691.png"
+        };
+    }    
     utility.debug('Tile Object to send from Phone');
     utility.debug(flipTileObj);
     var Registrations = connection.collection('Registrations');

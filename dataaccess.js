@@ -2071,7 +2071,7 @@ function SendSelfTile(response, handle,userID, subject, day, time,count) {
      if (subject.trim() == '' || day.trim() == '' || time.trim() == '') {
         
         var flipTileObj = {
-            'title' : '',
+            'title' : 'TELVOY',
             'backTitle' : null,
             'backBackgroundImage' : "",
             'backContent' : null,
@@ -2086,7 +2086,7 @@ function SendSelfTile(response, handle,userID, subject, day, time,count) {
         var meetingTime = time;
         
         var flipTileObj = {
-            'title' : '', 
+            'title' : 'TELVOY', 
             'backTitle' : 'TELVOY',
             'backContent' : backHeader + '\n' + invSubject + '\n' + meetingTime,
             'wideBackContent': backHeader + '\n' + InvSubjectLarge + '\n' + meetingTime,

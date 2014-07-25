@@ -2065,16 +2065,9 @@ function GetUserSettings(response, connection, userID) {
 }
 
 
-function SendSelfTile(response, connection, userID, subject, day, time) {
+function SendSelfTile(response, handle,userID, subject, day, time) {
     
-    if (connection == null) {
-        utility.log('database connection is null', 'ERROR');
-        response.setHeader("content-type", "text/plain");
-        response.write(unSuccessJson("Database Connection Failed."));
-        response.end();
-        return;
-    }
-    
+   
      if (subject.trim() == '' || day.trim() == '' || time.trim() == '') {
         
         var flipTileObj = {
@@ -2102,39 +2095,18 @@ function SendSelfTile(response, connection, userID, subject, day, time) {
     }    
     utility.debug('Tile Object to send from Phone');
     utility.debug(flipTileObj);
-    var Registrations = connection.collection('Registrations');
-    Registrations.findOne({ UserID: userID }, function (error, registrations) {
-        
-        if (error) {
-            utility.log("find registration error: " + error, 'ERROR');
-            response.setHeader("content-type", "text/plain");
-            response.write(unSuccessJson(error));
-            response.end();
-        }
-      else {
-                if (debug == true) {
-                    utility.log('Invitees Push URL Info');
-                    utility.log(registrations);
-                }
-                        if (registrations != null) {
-                            var pushURL = registrations.Handle;
+    
+    var pushURL = handle;
                 
-                            mpns.sendFlipTile(pushURL, flipTileObj, function () {
-                                utility.log('Pushed to ' + userID + " for " + subject);
-                    
-                                response.setHeader("content-type", "text/plain");
-                                response.write(SuccessJson());
-                                response.end();
-                            });
-                        }
-                        else {
-                            utility.log("Push URL Not Found");
-                            response.setHeader("content-type", "text/plain");
-                            response.write(unSuccessJson("Push URL Not Found."));
-                            response.end();
-                        }
-        }
+    mpns.sendFlipTile(pushURL, flipTileObj, function () {
+        utility.log('Pushed to ' + userID + " for " + subject);
+
+        response.setHeader("content-type", "text/plain");
+        response.write(SuccessJson());
+        response.end();
     });
+                       
+       
 }
 
 

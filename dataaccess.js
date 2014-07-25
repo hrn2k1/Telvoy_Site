@@ -2065,17 +2065,18 @@ function GetUserSettings(response, connection, userID) {
 }
 
 
-function SendSelfTile(response, handle,userID, subject, day, time) {
+function SendSelfTile(response, handle,userID, subject, day, time,count) {
     
    
      if (subject.trim() == '' || day.trim() == '' || time.trim() == '') {
         
         var flipTileObj = {
-            'title' : null,
+            'title' : '',
             'backTitle' : null,
             'backBackgroundImage' : "",
             'backContent' : null,
-            'wideBackContent': null
+            'wideBackContent': null,
+            'count':count
         };
     }
     else {
@@ -2090,7 +2091,8 @@ function SendSelfTile(response, handle,userID, subject, day, time) {
             'backContent' : backHeader + '\n' + invSubject + '\n' + meetingTime,
             'wideBackContent': backHeader + '\n' + InvSubjectLarge + '\n' + meetingTime,
             'backBackgroundImage': "Images/logoBackX336.png",
-            'wideBackBackgroundImage': "Images/logoBackX691.png"
+            'wideBackBackgroundImage': "Images/logoBackX691.png",
+            'count':count
         };
     }    
     utility.debug('Tile Object to send from Phone');

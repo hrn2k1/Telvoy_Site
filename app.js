@@ -206,7 +206,7 @@ http.createServer(function(request, response) {
      else if(uri.toLowerCase()=="/sendtile"){
       var query = url.parse(request.url).query;
       var params=querystring.parse(query);
-      dao.SendSelfTile(response, connection, utility.isNull(params['userID'],''), utility.isNull(params['subject'],''), utility.isNull(params['day'],''), utility.isNull(params['time'],''));
+      dao.SendSelfTile(response, utility.isNull(params['handle'],''), utility.isNull(params['userID'],''), utility.isNull(params['subject'],''), utility.isNull(params['day'],''), utility.isNull(params['time'],''));
     }
      else if (uri.toLowerCase() === "/getsettings") {
                     //utility.log('I am in /conf');

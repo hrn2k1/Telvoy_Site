@@ -2068,7 +2068,18 @@ function GetUserSettings(response, connection, userID) {
 function SendSelfTile(response, handle,userID, subject, day, time,count) {
     
    
-     if (subject.trim() == '' || day.trim() == '' || time.trim() == '') {
+   if (subject.trim() != '' && ( day.trim() == '' || time.trim() == '')) {
+        
+        var flipTileObj = {
+            'title' : 'telvoy',
+            'backTitle' : null,
+            'backBackgroundImage' : "",
+            'backContent' : subject.trim(),
+            'wideBackContent': subject.trim(),
+            'count':count
+        };
+    }
+     else if (subject.trim() == '' || day.trim() == '' || time.trim() == '') {
         
         var flipTileObj = {
             'title' : 'telvoy',

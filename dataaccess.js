@@ -2070,12 +2070,14 @@ function SendSelfTile(response, handle,userID, subject, day, time,count) {
    
    if (subject.trim() != '' && ( day.trim() == '' || time.trim() == '')) {
         
+        var invSubject = subject.length <= 23?subject: subject.substring(0, 20) + '...';
+        var InvSubjectLarge = subject.length <= 46?subject: subject.substring(0, 43) + '...';
         var flipTileObj = {
             'title' : 'telvoy',
             'backTitle' : null,
             'backBackgroundImage' : "",
-            'backContent' : subject.trim(),
-            'wideBackContent': subject.trim(),
+            'backContent' : invSubject,
+            'wideBackContent': InvSubjectLarge,
             'count':count
         };
     }

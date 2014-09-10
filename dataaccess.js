@@ -2067,11 +2067,12 @@ function GetUserSettings(response, connection, userID) {
 
 function SendSelfTile(response, handle,userID, subject, day, time,count) {
     
+
    
    if (subject.trim() != '' && ( day.trim() == '' || time.trim() == '')) {
         
-        var invSubject = subject.length <= 23?subject: subject.substring(0, 40) + '...';
-        var InvSubjectLarge = subject.length <= 46?subject: subject.substring(0, 63) + '...';
+        var invSubject = subject.length <= 23?subject: subject.substring(0, 400) + '...';
+        var InvSubjectLarge = subject.length <= 46?subject: subject.substring(0, 603) + '...';
         var flipTileObj = {
             'title' : 'telvoy',
             'backTitle' : null,

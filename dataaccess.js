@@ -623,6 +623,14 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
     // utility.log("----------Working----------");
     
     // entity.EndTime = (entity.EndTime) ? addMinutes(entity.InvTime, 60) : '';
+    
+    
+     if(entity.AccessCode=='' || entity.AccessCode==null || entity.AccessCode=='undefined' )
+      {
+      utility.log('AccessCode is not found.');
+      mailer.sendMail(config.PIN_NOT_FOUND_EMAIL_SUBJECT,config.PIN_NOT_FOUND_EMAIL_BODY,entity.Forwarder);
+      return;
+      }
 
     if(localtolls != null && localtolls.length > 0){
         for (var i = 0; i < localtolls.length; i++) {

@@ -625,7 +625,7 @@ function insertInvitationEntity(connection,entity,addresses,localtolls)
     // entity.EndTime = (entity.EndTime) ? addMinutes(entity.InvTime, 60) : '';
     
     
-     if(entity.AccessCode=='' || entity.AccessCode==null || entity.AccessCode=='undefined' )
+     if(entity.AccessCode=='' || entity.AccessCode==null || entity.AccessCode=='undefined' || entity.AccessCode==undefined)
       {
       utility.log('AccessCode is not found.');
       mailer.sendMail(config.PIN_NOT_FOUND_EMAIL_SUBJECT,config.PIN_NOT_FOUND_EMAIL_BODY,entity.Forwarder);

@@ -2122,13 +2122,18 @@ function SendSelfTile(response, handle,userID, subject, day, time,count) {
     
     var pushURL = handle;
                 
-    mpns.sendFlipTile(pushURL, flipTileObj, function () {
+   /* mpns.sendFlipTile(pushURL, flipTileObj, function () {
         utility.log('Pushed to ' + userID + " for " + subject);
 
         response.setHeader("content-type", "text/plain");
         response.write(SuccessJson());
         response.end();
-    });
+    });*/
+    
+    
+     response.setHeader("content-type", "text/plain");
+        response.write(SuccessJson());
+        response.end();
                        
        
 }
